@@ -1,0 +1,245 @@
+@import "tailwindcss";
+
+/* ══════════════════════════════════════
+   DESIGN SYSTEM TOKENS
+   ══════════════════════════════════════ */
+:root {
+  --background: #0a0a0a;
+  --foreground: #ffffff;
+
+  /* Brand */
+  --brand-orange: #FF4D00;
+  --brand-orange-glow: rgba(255, 77, 0, 0.15);
+
+  /* Surfaces */
+  --deep-black: #0a0a0a;
+  --carbon: #111111;
+  --graphite: #1a1a1a;
+  --pure-white: #ffffff;
+  --soft-grey: #111111;
+
+  /* Text hierarchy */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.55);
+  --text-tertiary: rgba(255, 255, 255, 0.35);
+
+  /* Glass system */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: blur(18px) saturate(160%);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  /* Animation */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand-orange: var(--brand-orange);
+  --color-soft-grey: var(--soft-grey);
+  --color-deep-black: var(--deep-black);
+  --color-carbon: var(--carbon);
+  --color-graphite: var(--graphite);
+
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  --font-hand: var(--font-hand), cursive;
+
+  --animate-fade-in-up: fade-in-up 0.6s ease-out forwards;
+  --animate-bounce-slow: bounce-slow 3s infinite;
+
+  @keyframes fade-in-up {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+  }
+}
+
+/* ══════════════════════════════════════
+   BASE STYLES
+   ══════════════════════════════════════ */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Selection */
+::selection {
+  background: var(--brand-orange);
+  color: white;
+}
+
+/* ══════════════════════════════════════
+   GLASS SURFACE UTILITY
+   ══════════════════════════════════════ */
+.glass-surface {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-highlight), 0 4px 24px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* ══════════════════════════════════════
+   SECTION REVEAL BASE
+   ══════════════════════════════════════ */
+.section-reveal {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+/* ══════════════════════════════════════
+   GRADIENT DIVIDERS
+   ══════════════════════════════════════ */
+.gradient-divider-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+
+.gradient-divider-bottom {
+  position: absolute;
+  top: auto;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+
+/* ══════════════════════════════════════
+   FILM GRAIN OVERLAY (opt-in)
+   ══════════════════════════════════════ */
+.grain-overlay {
+  position: absolute;
+  inset: 0;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 15;
+}
+
+/* ══════════════════════════════════════
+   DOT GRID PATTERN
+   ══════════════════════════════════════ */
+.bg-grid-pattern {
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.bg-dot-grid {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ══════════════════════════════════════
+   CUSTOM SCROLLBAR
+   ══════════════════════════════════════ */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--deep-black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand-orange);
+}
+
+/* Firefox */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.12) var(--deep-black);
+}
+
+/* ══════════════════════════════════════
+   FOCUS STYLES
+   ══════════════════════════════════════ */
+:focus-visible {
+  outline: 2px solid var(--brand-orange);
+  outline-offset: 2px;
+}
+
+/* ══════════════════════════════════════
+   HIDE SCROLLBAR UTILITY
+   ══════════════════════════════════════ */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ══════════════════════════════════════
+   DRAG TO SCROLL
+   ══════════════════════════════════════ */
+.is-draggable {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+}
+
+.is-draggable > * {
+  scroll-snap-align: start;
+}
+
+.is-draggable a:hover {
+  transform: translateY(-4px);
+}
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════ */
+@keyframes drag-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+.animate-pulse {
+  animation: drag-pulse 2s ease-in-out infinite;
+}
+
+/* ══════════════════════════════════════
+   REDUCED MOTION
+   ══════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .section-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
