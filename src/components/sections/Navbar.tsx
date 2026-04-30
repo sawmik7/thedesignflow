@@ -113,7 +113,7 @@ export function Navbar({ isMenuOpen, setIsMenuOpen, isScrolled, scrollToContact 
             <a
               onClick={() => setIsMenuOpen(false)}
               href={`#${item.toLowerCase()}`}
-              className="mobile-menu-item block font-display text-5xl sm:text-6xl font-black uppercase tracking-tight text-white hover:text-[var(--brand-orange)] transition-colors duration-300 py-2"
+              className="mobile-menu-item block font-display text-4xl sm:text-6xl font-black uppercase tracking-tight text-white hover:text-[var(--brand-orange)] transition-colors duration-300 py-2"
             >
               {item}
             </a>
@@ -125,7 +125,7 @@ export function Navbar({ isMenuOpen, setIsMenuOpen, isScrolled, scrollToContact 
               scrollToContact();
               setIsMenuOpen(false);
             }}
-            className="mobile-menu-item block font-display text-5xl sm:text-6xl font-black uppercase tracking-tight text-white hover:text-[var(--brand-orange)] transition-colors duration-300 text-left py-2"
+            className="mobile-menu-item block font-display text-4xl sm:text-6xl font-black uppercase tracking-tight text-white hover:text-[var(--brand-orange)] transition-colors duration-300 text-left py-2"
           >
             Contact
           </button>
@@ -133,11 +133,11 @@ export function Navbar({ isMenuOpen, setIsMenuOpen, isScrolled, scrollToContact 
 
         {/* Bottom info */}
         <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end">
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">
+          <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-white/30 max-w-[45%]">
             © 2026 thedesignflow
           </span>
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--brand-orange)]">
-            hello@hasanul.design
+          <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[var(--brand-orange)] break-all max-w-[50%] text-right">
+            thedesignflow.ai@gmail.com
           </span>
         </div>
       </div>

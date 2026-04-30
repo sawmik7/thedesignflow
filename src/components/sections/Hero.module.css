@@ -199,7 +199,7 @@
 ───────────────────────────────────── */
 .headline {
   font-family: var(--font-display), "Inter", system-ui, sans-serif;
-  font-size: clamp(2.5rem, 7.5vw, 8rem);
+  font-size: clamp(2rem, 9vw, 8rem);
   font-weight: 900;
   line-height: 0.9;
   text-transform: uppercase;
@@ -575,6 +575,11 @@
 
   .badge span:not(.badgeDot) {
     font-size: 0.65rem;
+  }
+
+  .headline {
+    font-size: clamp(1.8rem, 11vw, 2.5rem);
+    letter-spacing: -0.02em;
   }
 }
 
