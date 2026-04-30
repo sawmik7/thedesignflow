@@ -150,10 +150,9 @@ export function Hero({ scrollToContact, entranceActive = true }: HeroProps) {
       scrollTrigger: { trigger: container.current, start: "top top", end: "bottom top", scrub: 1.5 },
     });
     gsap.to(headlineRef.current, {
-      y: -60,
-      opacity: 0,
+      y: -100,
       ease: "none",
-      scrollTrigger: { trigger: container.current, start: "top top", end: "55% top", scrub: 1 },
+      scrollTrigger: { trigger: container.current, start: "top top", end: "bottom top", scrub: 1 },
     });
 
   }, { scope: container, dependencies: [entranceActive] });

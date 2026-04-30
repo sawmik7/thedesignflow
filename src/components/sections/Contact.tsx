@@ -13,8 +13,8 @@ const CONTACT_INFO = [
   {
     icon: Mail,
     label: "Email",
-    value: "hksgraphicsdesign@gmail.com",
-    href: "mailto:hksgraphicsdesign@gmail.com",
+    value: "thedesignflow.ai@gmail.com",
+    href: "mailto:thedesignflow.ai@gmail.com",
     color: "#FF4D00",
   },
   {

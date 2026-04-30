@@ -155,7 +155,7 @@ export function Footer() {
           {/* Email CTA */}
           <div className="footer-email-row">
             <a
-              href="mailto:hksgraphicsdesign@gmail.com"
+              href="mailto:thedesignflow.ai@gmail.com"
               className="group inline-flex items-center gap-4 relative py-2 px-2"
             >
               {/* Icon */}
@@ -178,7 +178,7 @@ export function Footer() {
                   color: "rgba(255,255,255,0.65)",
                 }}
               >
-                hksgraphicsdesign@gmail.com
+                thedesignflow.ai@gmail.com
               </span>
 
               <ExternalLink

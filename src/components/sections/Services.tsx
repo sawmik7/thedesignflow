@@ -4,16 +4,17 @@ import React, { useLayoutEffect, useRef } from "react";
 import { Bot, Monitor, Layout, PenTool, ArrowRight } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motion } from "framer-motion";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 const services = [
-  { icon: <Bot size={28} />, title: "AI Automation", desc: "Transform your business with intelligent automation. Custom AI chatbots, n8n/Zapier workflows, and OpenAI integrations that save you hours every week.", color: "#8B5CF6" },
-  { icon: <Monitor size={28} />, title: "Vibe Coding", desc: "Building high-performance, modern websites using Next.js and GSAP. We craft pixel-perfect, responsive digital experiences with cinematic animations.", color: "#3B82F6" },
-  { icon: <Layout size={28} />, title: "SaaS UI/UX", desc: "End-to-end design and development for SaaS products. From user research and wireframing to high-fidelity dashboards and design systems.", color: "#10B981" },
-  { icon: <PenTool size={28} />, title: "Brand Identity", desc: "Crafting minimalist logos and comprehensive visual systems that define your unique market position and help you stand out from the competition.", color: "#FF4D00" },
+  { icon: <Bot size={28} />, title: "AI Automation Agency", desc: "Transform your business with intelligent enterprise automation. Custom AI chatbots, n8n workflows, and OpenAI integrations to scale your operations rapidly.", color: "#8B5CF6" },
+  { icon: <Monitor size={28} />, title: "High-Performance Web Dev", desc: "SEO-optimized Next.js web development and Vibe Coding. We craft pixel-perfect, responsive digital experiences with cinematic GSAP animations.", color: "#3B82F6" },
+  { icon: <Layout size={28} />, title: "SaaS UI/UX Product Design", desc: "End-to-end design and development for B2B SaaS products. From user research and wireframing to high-converting dashboards and design systems.", color: "#10B981" },
+  { icon: <PenTool size={28} />, title: "Premium Brand Identity", desc: "Crafting minimalist logos and comprehensive visual systems that define your unique market position and help you dominate your competition.", color: "#FF4D00" },
 ];
 
 export function Services() {
@@ -86,13 +87,14 @@ export function Services() {
         {/* Service cards grid */}
         <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
           {services.map((s, i) => (
-            <div
+            <motion.div
               key={i}
+              whileHover={{ y: -8, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
               className="service-card group relative h-[380px] overflow-hidden rounded-2xl cursor-default
                 bg-white/[0.03] backdrop-blur-xl border border-white/[0.08]
                 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_24px_rgba(0,0,0,0.3)]
-                hover:border-white/[0.15] transition-all duration-500
-                hover:-translate-y-1"
+                hover:border-white/[0.15] transition-colors duration-500"
             >
               {/* Scanning sweep */}
               <div className="absolute inset-0 pointer-events-none"
@@ -109,42 +111,52 @@ export function Services() {
                 style={{ background: `linear-gradient(to right, transparent, ${s.color}, transparent)` }}
               />
 
+              {/* Ambient colored background blur on hover */}
+              <div
+                className="absolute -top-20 -left-20 w-64 h-64 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none blur-[80px]"
+                style={{ background: s.color }}
+              />
+
               {/* Icon */}
-              <div className="absolute top-8 left-8 transition-all duration-500 group-hover:translate-x-1 z-10">
+              <motion.div 
+                className="absolute top-8 left-8 z-10"
+                whileHover={{ rotate: 5, scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
                 <div
-                  className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500"
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500"
                   style={{
                     background: `${s.color}15`,
                     color: s.color,
-                    boxShadow: `0 0 20px ${s.color}10`,
+                    boxShadow: `0 0 20px ${s.color}15, inset 0 0 0 1px ${s.color}30`,
                   }}
                 >
                   {s.icon}
                 </div>
-              </div>
+              </motion.div>
 
               {/* Title */}
-              <div className="absolute top-24 left-8 transition-all duration-500 origin-left group-hover:top-8 group-hover:left-20 z-10">
-                <h3 className="font-display text-2xl md:text-3xl font-bold text-white">{s.title}</h3>
+              <div className="absolute top-28 left-8 transition-all duration-500 origin-left group-hover:top-10 group-hover:left-28 z-10">
+                <h3 className="font-display text-2xl md:text-3xl font-bold text-white drop-shadow-md">{s.title}</h3>
               </div>
 
               {/* Description */}
-              <div className="absolute top-40 left-8 right-8 transition-all duration-500 opacity-60 group-hover:opacity-100 group-hover:top-24">
-                <p className="text-sm md:text-base leading-relaxed text-white/50 line-clamp-3 group-hover:line-clamp-none">
+              <div className="absolute top-44 left-8 right-8 transition-all duration-500 opacity-60 group-hover:opacity-100 group-hover:top-28">
+                <p className="text-sm md:text-base leading-relaxed text-white/70 line-clamp-3 group-hover:line-clamp-none">
                   {s.desc}
                 </p>
-                <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100 flex items-center gap-2 text-sm font-bold"
+                <div className="mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100 flex items-center gap-2 text-sm font-bold"
                   style={{ color: s.color }}
                 >
-                  Learn more <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-300" />
+                  Explore service <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform duration-300" />
                 </div>
               </div>
 
               {/* Bottom progress bar */}
-              <div className="absolute bottom-0 left-0 w-0 h-[2px] transition-all duration-500 group-hover:w-full"
-                style={{ background: s.color }}
+              <div className="absolute bottom-0 left-0 w-0 h-[3px] transition-all duration-700 ease-out group-hover:w-full"
+                style={{ background: `linear-gradient(90deg, transparent, ${s.color})` }}
               />
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
