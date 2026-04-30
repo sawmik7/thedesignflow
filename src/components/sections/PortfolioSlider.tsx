@@ -2,75 +2,14 @@
 
 import React, { useLayoutEffect, useRef, useState, useCallback, useEffect } from "react";
 import { ArrowRight, ArrowLeft, ExternalLink } from "lucide-react";
+import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { works } from "@/lib/portfolioData";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
-
-const works = [
-  {
-    id: 1,
-    title: "Brand Identity",
-    cat: "Visual System & Logos",
-    desc: "Complete brand architecture — strategy, identity system, and visual language for premium businesses ready to dominate their market.",
-    img: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=85",
-    color: "#FF4D00",
-    year: "2024",
-    tag: "Branding",
-  },
-  {
-    id: 2,
-    title: "Web Design",
-    cat: "Next.js & GSAP",
-    desc: "Cinematic web experiences with buttery-smooth animations, pixel-perfect layouts, and conversion-optimised UX.",
-    img: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=800&q=85",
-    color: "#3B82F6",
-    year: "2024",
-    tag: "Web",
-  },
-  {
-    id: 3,
-    title: "AI Automation",
-    cat: "n8n & OpenAI",
-    desc: "Autonomous agents that eliminate repetitive work, qualify leads, and scale your operations 24/7 without hiring.",
-    img: "https://images.unsplash.com/photo-1633511090164-b4421b033878?w=800&q=85",
-    color: "#8B5CF6",
-    year: "2025",
-    tag: "AI",
-  },
-  {
-    id: 4,
-    title: "SaaS UI/UX",
-    cat: "Product Engineering",
-    desc: "Dashboard experiences built for clarity — reducing onboarding time and increasing daily active user retention.",
-    img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=85",
-    color: "#10B981",
-    year: "2024",
-    tag: "SaaS",
-  },
-  {
-    id: 5,
-    title: "Logo Design",
-    cat: "Minimalist Marks",
-    desc: "Iconic, timeless logos that define market presence — from wordmarks to abstract symbols engineered for recall.",
-    img: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=800&q=85",
-    color: "#F59E0B",
-    year: "2025",
-    tag: "Logo",
-  },
-  {
-    id: 6,
-    title: "AI Chatbots",
-    cat: "Conversational AI",
-    desc: "Intelligent assistants that qualify leads, answer support queries, and close deals — running 24/7 on autopilot.",
-    img: "https://images.unsplash.com/photo-1604871000636-074fa5117945?w=800&q=85",
-    color: "#EC4899",
-    year: "2025",
-    tag: "AI",
-  },
-];
 
 const CARD_COUNT = works.length;
 const STEP = 360 / CARD_COUNT;
@@ -85,24 +24,16 @@ export function PortfolioSlider() {
   const [mounted, setMounted] = useState(false);
   const angleRef = useRef(0);
 
-  /* ── Cylinder rotation helper ── */
+  /* ── Cylinder rotation ── */
   const spinTo = useCallback(
     (newIndex: number, delta: number) => {
       if (isAnimating) return;
       setIsAnimating(true);
-
       angleRef.current += delta;
 
-      /* Animate info panel out → cylinder → info panel in */
       const infoTl = gsap.timeline();
       infoTl
-        .to(".work-info-anim", {
-          y: 20,
-          opacity: 0,
-          duration: 0.25,
-          ease: "power2.in",
-          stagger: 0.05,
-        })
+        .to(".work-info-anim", { y: 20, opacity: 0, duration: 0.25, ease: "power2.in", stagger: 0.05 })
         .to(
           cylinderRef.current,
           {
@@ -126,100 +57,49 @@ export function PortfolioSlider() {
     [isAnimating]
   );
 
-  const next = useCallback(() => {
-    const ni = (activeIndex + 1) % CARD_COUNT;
-    spinTo(ni, -STEP);
+  const next = useCallback(() => spinTo((activeIndex + 1) % CARD_COUNT, -STEP), [activeIndex, spinTo]);
+  const prev = useCallback(() => spinTo((activeIndex - 1 + CARD_COUNT) % CARD_COUNT, STEP), [activeIndex, spinTo]);
+  const goTo = useCallback((i: number) => {
+    if (i === activeIndex) return;
+    const forward = i > activeIndex;
+    const diff = Math.abs(i - activeIndex);
+    spinTo(i, forward ? -diff * STEP : diff * STEP);
   }, [activeIndex, spinTo]);
 
-  const prev = useCallback(() => {
-    const ni = (activeIndex - 1 + CARD_COUNT) % CARD_COUNT;
-    spinTo(ni, STEP);
-  }, [activeIndex, spinTo]);
-
-  const goTo = useCallback(
-    (i: number) => {
-      if (i === activeIndex) return;
-      const forward = i > activeIndex;
-      const diff = Math.abs(i - activeIndex);
-      spinTo(i, forward ? -diff * STEP : diff * STEP);
-    },
-    [activeIndex, spinTo]
-  );
-
-  /* ── Keyboard navigation ── */
+  /* ── Keyboard nav ── */
   useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
+    const onKey = (e: KeyboardEvent) => {
       if (!sectionRef.current) return;
       const rect = sectionRef.current.getBoundingClientRect();
       const inView = rect.top < window.innerHeight * 0.7 && rect.bottom > window.innerHeight * 0.3;
       if (!inView) return;
-
       if (e.key === "ArrowRight") { e.preventDefault(); next(); }
       if (e.key === "ArrowLeft") { e.preventDefault(); prev(); }
     };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [next, prev]);
 
   /* ── Scroll-triggered entrance ── */
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      /* Section fade in */
-      gsap.fromTo(
-        sectionRef.current,
-        { opacity: 0 },
-        {
-          opacity: 1,
-          duration: 1.2,
-          ease: "power2.out",
-          scrollTrigger: { trigger: sectionRef.current, start: "top 85%" },
-        }
-      );
-
-      /* Left panel lines cascade in */
-      gsap.fromTo(
-        ".slider-line",
-        { x: -50, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 1,
-          stagger: 0.12,
-          ease: "power3.out",
-          scrollTrigger: { trigger: sectionRef.current, start: "top 70%" },
-        }
-      );
-
-      /* Cylinder entrance — tilt in from right */
-      gsap.fromTo(
-        cylinderRef.current,
-        { rotateY: -35, x: 120, opacity: 0 },
-        {
-          rotateY: 0,
-          x: 0,
-          opacity: 1,
-          duration: 1.4,
-          ease: "expo.out",
-          scrollTrigger: { trigger: sectionRef.current, start: "top 60%" },
-        }
-      );
-
-      /* Info panel stagger */
-      gsap.fromTo(
-        ".work-info-anim",
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.9,
-          stagger: 0.1,
-          ease: "power3.out",
-          scrollTrigger: { trigger: sectionRef.current, start: "top 65%" },
-        }
-      );
+      gsap.fromTo(sectionRef.current, { opacity: 0 }, {
+        opacity: 1, duration: 1.2, ease: "power2.out",
+        scrollTrigger: { trigger: sectionRef.current, start: "top 85%" },
+      });
+      gsap.fromTo(".slider-line", { x: -50, opacity: 0 }, {
+        x: 0, opacity: 1, duration: 1, stagger: 0.12, ease: "power3.out",
+        scrollTrigger: { trigger: sectionRef.current, start: "top 70%" },
+      });
+      gsap.fromTo(cylinderRef.current, { rotateY: -35, x: 120, opacity: 0 }, {
+        rotateY: 0, x: 0, opacity: 1, duration: 1.4, ease: "expo.out",
+        scrollTrigger: { trigger: sectionRef.current, start: "top 60%" },
+      });
+      gsap.fromTo(".work-info-anim", { y: 30, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 0.9, stagger: 0.1, ease: "power3.out",
+        scrollTrigger: { trigger: sectionRef.current, start: "top 65%" },
+      });
     }, sectionRef);
-
     return () => ctx.revert();
   }, []);
 
@@ -227,30 +107,23 @@ export function PortfolioSlider() {
   useLayoutEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
-
     let lastWheel = 0;
     const onWheel = (e: WheelEvent) => {
       const rect = section.getBoundingClientRect();
       const inView = rect.top < window.innerHeight * 0.5 && rect.bottom > window.innerHeight * 0.5;
       if (!inView) return;
-
       const now = Date.now();
       if (now - lastWheel < 700) return;
       lastWheel = now;
-
-      if (e.deltaY > 0) next();
-      else prev();
+      if (e.deltaY > 0) next(); else prev();
     };
-
     window.addEventListener("wheel", onWheel, { passive: true });
     return () => window.removeEventListener("wheel", onWheel);
   }, [next, prev]);
 
   useLayoutEffect(() => {
     setMounted(true);
-    const handleResize = () => {
-      setRadius(window.innerWidth > 768 ? 440 : 300);
-    };
+    const handleResize = () => setRadius(window.innerWidth > 768 ? 440 : 300);
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -261,31 +134,26 @@ export function PortfolioSlider() {
   return (
     <section
       ref={sectionRef}
-      id="work"
+      id="portfolio"
       className="relative min-h-screen bg-transparent overflow-hidden flex items-center pt-40 pb-24 md:pt-48 z-20"
     >
       {/* Film grain */}
       <div className="grain-overlay" />
 
-      {/* Dynamic colour ambient bleed — intensified */}
+      {/* Dynamic colour ambient */}
       <div
         className="absolute inset-0 pointer-events-none transition-all duration-1000"
-        style={{
-          background: `radial-gradient(ellipse 60% 80% at 70% 50%, ${aw.color}22, transparent 65%)`,
-        }}
+        style={{ background: `radial-gradient(ellipse 60% 80% at 70% 50%, ${aw.color}22, transparent 65%)` }}
       />
-      {/* Top-left subtle glow */}
       <div
         className="absolute top-0 left-0 w-96 h-96 pointer-events-none rounded-full blur-[120px] opacity-20 transition-all duration-1000"
         style={{ background: aw.color }}
       />
 
-      {/* Vignette edges */}
+      {/* Vignette */}
       <div className="absolute inset-0 pointer-events-none" style={{
         background: "radial-gradient(ellipse 80% 80% at 50% 50%, transparent 60%, rgba(10,10,10,0.6) 100%)"
       }} />
-
-      {/* Gradient dividers */}
       <div className="gradient-divider-top" />
 
       <div className="container mx-auto max-w-7xl px-6 flex flex-col lg:flex-row items-center gap-16 lg:gap-24 relative z-10">
@@ -317,10 +185,7 @@ export function PortfolioSlider() {
             {/* Category + year */}
             <div className="work-info-anim flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <span
-                  className="w-1.5 h-1.5 rounded-full"
-                  style={{ background: aw.color }}
-                />
+                <span className="w-1.5 h-1.5 rounded-full" style={{ background: aw.color }} />
                 <span className="text-[11px] font-black uppercase tracking-[0.22em]" style={{ color: aw.color }}>
                   {aw.cat}
                 </span>
@@ -341,12 +206,26 @@ export function PortfolioSlider() {
               {aw.desc}
             </p>
 
-            {/* View project CTA */}
-            <div className="work-info-anim pt-2">
-              <button className="group inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-white/50 hover:text-white transition-colors duration-300">
-                <span>View Case Study</span>
-                <ExternalLink size={12} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
-              </button>
+            {/* View All Works CTA — links to category page */}
+            <div className="work-info-anim pt-2 flex items-center gap-4">
+              <Link
+                href={`/portfolio/${aw.slug}`}
+                className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300"
+                style={{
+                  background: `${aw.color}18`,
+                  color: aw.color,
+                  border: `1px solid ${aw.color}35`,
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = `${aw.color}30`;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = `${aw.color}18`;
+                }}
+              >
+                View All {aw.title} Works
+                <ExternalLink size={11} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
+              </Link>
             </div>
           </div>
 
@@ -376,22 +255,26 @@ export function PortfolioSlider() {
             >
               <ArrowRight size={18} />
             </button>
+
+            {/* All categories link */}
+            <Link
+              href={`/portfolio/${aw.slug}`}
+              className="ml-auto text-[10px] font-black uppercase tracking-[0.2em] text-white/30 hover:text-white/60 transition-colors duration-300 flex items-center gap-1.5"
+            >
+              All {aw.tag} <ArrowRight size={10} />
+            </Link>
           </div>
         </div>
 
         {/* ── RIGHT: 3D Cylinder ── */}
         <div
-          className="flex-1 flex items-center justify-center cursor-drag"
+          className="flex-1 flex items-center justify-center"
           style={{ perspective: "1200px", minHeight: "360px" }}
         >
           <div
             ref={cylinderRef}
             className="relative will-change-transform"
-            style={{
-              transformStyle: "preserve-3d",
-              width: "240px",
-              height: "320px",
-            }}
+            style={{ transformStyle: "preserve-3d", width: "240px", height: "320px" }}
           >
             {works.map((work, i) => {
               const angle = i * STEP;
@@ -408,46 +291,57 @@ export function PortfolioSlider() {
                   suppressHydrationWarning
                   onClick={() => goTo(i)}
                 >
-                  <div
-                    className="w-full h-full rounded-2xl overflow-hidden border transition-all duration-500 group"
-                    style={{
-                      borderColor: isActive ? `${work.color}40` : "rgba(255,255,255,0.08)",
-                      boxShadow: isActive
-                        ? `0 30px 80px -10px ${work.color}30, 0 0 0 1px ${work.color}20`
-                        : "0 20px 60px -10px rgba(0,0,0,0.7)",
-                      filter: isActive ? "none" : "saturate(0.7) brightness(0.8)",
-                    }}
-                  >
-                    <img
-                      src={work.img}
-                      alt={work.title}
-                      loading="lazy"
-                      className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
-                      style={{ filter: isActive ? "none" : "inherit" }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <span
-                        className="inline-block text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded"
-                        style={{ background: `${work.color}22`, color: work.color }}
-                      >
-                        {work.tag}
-                      </span>
-                      <h4 className="text-white font-display font-bold text-sm mt-1.5 leading-tight tracking-tight drop-shadow-lg">
-                        {work.title}
-                      </h4>
-                    </div>
-                    {/* Active ring with pulse */}
-                    {isActive && (
-                      <div
-                        className="absolute inset-0 rounded-2xl border-2 pointer-events-none"
-                        style={{
-                          borderColor: `${work.color}50`,
-                          animation: "pulse-ring 3s ease-in-out infinite",
-                        }}
+                  <Link href={`/portfolio/${work.slug}`} onClick={(e) => { if (i !== activeIndex) e.preventDefault(); }}>
+                    <div
+                      className="w-full h-full rounded-2xl overflow-hidden border transition-all duration-500 group relative"
+                      style={{
+                        borderColor: isActive ? `${work.color}40` : "rgba(255,255,255,0.08)",
+                        boxShadow: isActive
+                          ? `0 30px 80px -10px ${work.color}30, 0 0 0 1px ${work.color}20`
+                          : "0 20px 60px -10px rgba(0,0,0,0.7)",
+                        filter: isActive ? "none" : "saturate(0.7) brightness(0.8)",
+                      }}
+                    >
+                      <img
+                        src={work.img}
+                        alt={work.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
                       />
-                    )}
-                  </div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4">
+                        <span
+                          className="inline-block text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded"
+                          style={{ background: `${work.color}22`, color: work.color }}
+                        >
+                          {work.tag}
+                        </span>
+                        <h4 className="text-white font-display font-bold text-sm mt-1.5 leading-tight tracking-tight drop-shadow-lg">
+                          {work.title}
+                        </h4>
+                      </div>
+
+                      {/* Active ring */}
+                      {isActive && (
+                        <div
+                          className="absolute inset-0 rounded-2xl border-2 pointer-events-none"
+                          style={{ borderColor: `${work.color}50`, animation: "pulse-ring 3s ease-in-out infinite" }}
+                        />
+                      )}
+
+                      {/* Active: "View All" hover hint */}
+                      {isActive && (
+                        <div
+                          className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"
+                          style={{ background: `${work.color}18`, backdropFilter: "blur(4px)" }}
+                        >
+                          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white flex items-center gap-1.5">
+                            View All <ArrowRight size={10} />
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </Link>
                 </div>
               );
             })}
@@ -467,14 +361,12 @@ export function PortfolioSlider() {
               height: "6px",
               borderRadius: "999px",
               background: i === activeIndex ? aw.color : "rgba(255,255,255,0.18)",
-              transform: i === activeIndex ? "scale(1)" : "scale(1)",
             }}
-            aria-label={`Go to work ${i + 1}`}
+            aria-label={`Go to ${w.title}`}
           />
         ))}
       </div>
 
-      {/* Pulse ring keyframe (inline for module isolation) */}
       <style>{`
         @keyframes pulse-ring {
           0%, 100% { opacity: 0.5; }

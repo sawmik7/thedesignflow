@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useLayoutEffect, useRef, useState, useEffect } from "react";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import React, { useLayoutEffect, useRef, useEffect, useState } from "react";
+import { ArrowRight, ChevronDown, Sparkles } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { splitIntoChars } from "@/lib/splitText";
 import styles from "./Hero.module.css";
 
 if (typeof window !== "undefined") {
@@ -17,178 +16,275 @@ interface HeroProps {
   entranceActive?: boolean;
 }
 
+const SKILLS = [
+  { label: "Frontend Dev", color: "#FF4D00" },
+  { label: "UI/UX Design", color: "#8B5CF6" },
+  { label: "GSAP Pro", color: "#10B981" },
+  { label: "Motion Design", color: "#3B82F6" },
+  { label: "Next.js", color: "#F59E0B" },
+  { label: "Micro-Animations", color: "#EC4899" },
+  { label: "Design Systems", color: "#06B6D4" },
+  { label: "Figma", color: "#FF4D00" },
+  { label: "Framer Motion", color: "#8B5CF6" },
+  { label: "Brand Identity", color: "#10B981" },
+  { label: "SaaS UI", color: "#3B82F6" },
+  { label: "AI Automation", color: "#F59E0B" },
+];
+
+const SCRAMBLE_CHARS = "!<>-_\\/[]{}—=+*^?#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+function ScrambleText({ text, active }: { text: string; active: boolean }) {
+  const [display, setDisplay] = useState(text);
+
+  useEffect(() => {
+    if (!active) { setDisplay(text); return; }
+    let frame = 0;
+    let raf: number;
+    const maxFrames = 22;
+
+    function tick() {
+      frame++;
+      const next = text
+        .split("")
+        .map((char, i) => {
+          const reveal = Math.floor((frame / maxFrames) * text.length);
+          if (i < reveal) return char;
+          return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+        })
+        .join("");
+      setDisplay(next);
+      if (frame < maxFrames) raf = requestAnimationFrame(tick);
+      else setDisplay(text);
+    }
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [active, text]);
+
+  return <>{display}</>;
+}
+
 export function Hero({ scrollToContact, entranceActive = true }: HeroProps) {
   const container = useRef<HTMLDivElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
-  const subHeadlineRef = useRef<HTMLDivElement>(null);
+  const subRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLButtonElement>(null);
+  const secondaryCtaRef = useRef<HTMLAnchorElement>(null);
   const blobsRef = useRef<HTMLDivElement>(null);
+  const skillsTrackRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const cursorGlowRef = useRef<HTMLDivElement>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+  const badgeRef = useRef<HTMLDivElement>(null);
 
-  const headlineChars = splitIntoChars("WEIGHTLESS\nDIGITAL\nEXPERIENCES");
+  // Cursor glow follower
+  useEffect(() => {
+    const glow = cursorGlowRef.current;
+    if (!glow) return;
+    const move = (e: MouseEvent) => {
+      gsap.to(glow, { x: e.clientX - 150, y: e.clientY - 150, duration: 0.8, ease: "power2.out" });
+    };
+    window.addEventListener("mousemove", move);
+    return () => window.removeEventListener("mousemove", move);
+  }, []);
+
+  // Infinite skills marquee
+  useLayoutEffect(() => {
+    const track = skillsTrackRef.current;
+    if (!track) return;
+    // wait a tick for layout
+    const id = setTimeout(() => {
+      const totalWidth = track.scrollWidth / 2;
+      gsap.to(track, { x: -totalWidth, duration: 30, ease: "none", repeat: -1 });
+    }, 100);
+    return () => clearTimeout(id);
+  }, []);
 
   useGSAP(() => {
     if (!entranceActive) return;
 
     const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
 
-    // 1. Initial State
-    gsap.set(".char", { y: 100, opacity: 0, rotateX: -90 });
-    gsap.set(subHeadlineRef.current, { y: 20, opacity: 0 });
-    gsap.set(ctaRef.current, { scale: 0.8, opacity: 0 });
     gsap.set(`.${styles.liquidBlob}`, { scale: 0, opacity: 0 });
+    gsap.set(badgeRef.current, { y: -20, opacity: 0 });
+    gsap.set(headlineRef.current, { y: 60, opacity: 0 });
+    gsap.set(subRef.current, { y: 30, opacity: 0 });
+    gsap.set(ctaRef.current, { y: 20, opacity: 0 });
+    gsap.set(secondaryCtaRef.current, { y: 20, opacity: 0 });
+    gsap.set(statsRef.current, { y: 30, opacity: 0 });
+    gsap.set(scrollIndicatorRef.current, { opacity: 0 });
 
-    // 2. Entrance Sequence
-    tl.to(`.${styles.liquidBlob}`, {
-      scale: 1,
-      opacity: 1,
-      duration: 2,
-      stagger: 0.2,
-      ease: "elastic.out(1, 0.8)",
-    })
-    .to(".char", {
-      y: 0,
-      opacity: 1,
-      rotateX: 0,
-      duration: 1.2,
-      stagger: 0.02,
-    }, "-=1.5")
-    .to(subHeadlineRef.current, {
-      y: 0,
-      opacity: 1,
-      duration: 1,
-    }, "-=0.8")
-    .to(ctaRef.current, {
-      scale: 1,
-      opacity: 1,
-      duration: 1,
-      ease: "back.out(1.7)",
-    }, "-=0.6");
+    tl.to(`.${styles.liquidBlob}`, { scale: 1, opacity: 1, duration: 2.2, stagger: 0.15, ease: "elastic.out(1, 0.75)" })
+      .to(badgeRef.current, { y: 0, opacity: 1, duration: 0.8 }, "-=2")
+      .to(headlineRef.current, { y: 0, opacity: 1, duration: 1, ease: "power3.out" }, "-=1.6")
+      .to(subRef.current, { y: 0, opacity: 1, duration: 0.9 }, "-=0.7")
+      .to(ctaRef.current, { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)" }, "-=0.6")
+      .to(secondaryCtaRef.current, { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.7)" }, "-=0.55")
+      .to(statsRef.current, { y: 0, opacity: 1, duration: 0.8 }, "-=0.5")
+      .to(scrollIndicatorRef.current, { opacity: 1, duration: 0.8 }, "-=0.3");
 
-    // 3. Ambient Liquid Movement
-    gsap.to(".blob1", {
-      x: "10%",
-      y: "15%",
-      duration: 20,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
-    gsap.to(".blob2", {
-      x: "-15%",
-      y: "-10%",
-      duration: 25,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
-    });
-    gsap.to(".blob3", {
-      x: "12%",
-      y: "-12%",
-      duration: 22,
-      repeat: -1,
-      yoyo: true,
-      ease: "sine.inOut",
+    // Stat counters
+    const counters = document.querySelectorAll(`.${styles.statNumber}`);
+    counters.forEach((el) => {
+      const target = parseInt(el.getAttribute("data-target") || "0", 10);
+      const obj = { val: 0 };
+      gsap.to(obj, {
+        val: target,
+        duration: 2.2,
+        delay: 1.6,
+        ease: "power2.out",
+        onUpdate() { (el as HTMLElement).textContent = Math.round(obj.val) + "+"; },
+      });
     });
 
-    // 4. Parallax Scroll
+    // Ambient blobs
+    gsap.to(".blob1", { x: "8%", y: "12%", duration: 22, repeat: -1, yoyo: true, ease: "sine.inOut" });
+    gsap.to(".blob2", { x: "-12%", y: "-8%", duration: 28, repeat: -1, yoyo: true, ease: "sine.inOut" });
+    gsap.to(".blob3", { x: "10%", y: "-10%", duration: 18, repeat: -1, yoyo: true, ease: "sine.inOut" });
+    gsap.to(".blob4", { x: "-8%", y: "14%", duration: 24, repeat: -1, yoyo: true, ease: "sine.inOut" });
+
+    // Parallax out
     gsap.to(blobsRef.current, {
-      y: 150,
+      y: 180,
       ease: "none",
-      scrollTrigger: {
-        trigger: container.current,
-        start: "top top",
-        end: "bottom top",
-        scrub: true,
-      },
+      scrollTrigger: { trigger: container.current, start: "top top", end: "bottom top", scrub: 1.5 },
     });
-
     gsap.to(headlineRef.current, {
-      y: -100,
-      opacity: 0.5,
+      y: -60,
+      opacity: 0,
       ease: "none",
-      scrollTrigger: {
-        trigger: container.current,
-        start: "top top",
-        end: "bottom top",
-        scrub: true,
-      },
+      scrollTrigger: { trigger: container.current, start: "top top", end: "55% top", scrub: 1 },
     });
 
-  }, { scope: container });
+  }, { scope: container, dependencies: [entranceActive] });
 
-  // Magnetic Button Effect
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!ctaRef.current) return;
-    const btn = ctaRef.current;
-    const rect = btn.getBoundingClientRect();
+  // Magnetic CTA
+  const handleMouseMove = (e: React.MouseEvent, ref: React.RefObject<HTMLElement | null>) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
     const x = e.clientX - rect.left - rect.width / 2;
     const y = e.clientY - rect.top - rect.height / 2;
-
-    gsap.to(btn, {
-      x: x * 0.35,
-      y: y * 0.35,
-      duration: 0.4,
-      ease: "power2.out",
-    });
+    gsap.to(ref.current, { x: x * 0.38, y: y * 0.38, duration: 0.4, ease: "power2.out" });
   };
 
-  const handleMouseLeave = () => {
-    if (!ctaRef.current) return;
-    gsap.to(ctaRef.current, {
-      x: 0,
-      y: 0,
-      duration: 0.6,
-      ease: "elastic.out(1, 0.3)",
-    });
+  const handleMouseLeave = (ref: React.RefObject<HTMLElement | null>) => {
+    if (!ref.current) return;
+    gsap.to(ref.current, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.3)" });
   };
 
   return (
-    <section ref={container} className={styles.heroSection}>
+    <section ref={container} className={styles.heroSection} id="hero">
+      {/* Cursor glow */}
+      <div ref={cursorGlowRef} className={styles.cursorGlow} />
       <div className={styles.grainOverlay} />
-      
-      {/* Liquid Blobs Background */}
-      <div ref={blobsRef} className="absolute inset-0">
+      <div className={styles.gridLines} />
+
+      {/* Blobs */}
+      <div ref={blobsRef} className={styles.blobsContainer}>
         <div className={`${styles.liquidBlob} ${styles.blob1} blob1`} />
         <div className={`${styles.liquidBlob} ${styles.blob2} blob2`} />
         <div className={`${styles.liquidBlob} ${styles.blob3} blob3`} />
+        <div className={`${styles.liquidBlob} ${styles.blob4} blob4`} />
       </div>
 
-      <div className={`${styles.perspectiveContainer} relative z-20`}>
-        <div ref={subHeadlineRef} className={styles.subHeadline}>
-          Crafting Elite Digital Identities
+      {/* Main content */}
+      <div className={styles.perspectiveContainer}>
+
+        {/* Badge */}
+        <div ref={badgeRef} className={styles.badge}>
+          <Sparkles size={12} className={styles.badgeIcon} />
+          <span>Available for new projects</span>
+          <span className={styles.badgeDot} />
         </div>
 
+        {/* Headline — always visible, GSAP animates from y:60,opacity:0 */}
         <h1 ref={headlineRef} className={styles.headline}>
-          {headlineChars.map((item, i) => (
-            <span key={i} className="inline-block">
-              {item.char === "\n" ? (
-                <br />
-              ) : (
-                <span className="char inline-block whitespace-pre">
-                  {item.char}
-                </span>
-              )}
+          <span className={styles.headlineLine}>
+            <span className={styles.headlineWord}>
+              <ScrambleText text="CRAFTING" active={entranceActive} />
             </span>
-          ))}
+          </span>
+          <span className={styles.headlineLine}>
+            <span className={`${styles.headlineWord} ${styles.headlineWordGlow}`}>
+              <ScrambleText text="DIGITAL" active={entranceActive} />
+            </span>
+          </span>
+          <span className={styles.headlineLine}>
+            <span className={styles.headlineWord}>
+              <ScrambleText text="EXCELLENCE" active={entranceActive} />
+            </span>
+          </span>
         </h1>
 
-        <div className="mt-8">
+        {/* Sub headline */}
+        <div ref={subRef} className={styles.subHeadline}>
+          <span className={styles.subLine} />
+          <p>Full-Stack Designer & Frontend Architect — building cinematic digital identities</p>
+          <span className={styles.subLine} />
+        </div>
+
+        {/* CTAs */}
+        <div className={styles.ctaRow}>
           <button
             ref={ctaRef}
             onClick={scrollToContact}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
+            onMouseMove={(e) => handleMouseMove(e, ctaRef)}
+            onMouseLeave={() => handleMouseLeave(ctaRef)}
             className={styles.magneticCta}
+            id="hero-cta-primary"
           >
-            Start Your Vision
-            <ArrowRight size={20} className="ml-3" />
+            <span className={styles.ctaBg} />
+            <span className={styles.ctaLabel}>Start Your Vision</span>
+            <span className={styles.ctaArrow}><ArrowRight size={18} /></span>
           </button>
+
+          <a
+            ref={secondaryCtaRef}
+            href="#portfolio"
+            onMouseMove={(e) => handleMouseMove(e, secondaryCtaRef)}
+            onMouseLeave={() => handleMouseLeave(secondaryCtaRef)}
+            className={styles.secondaryCta}
+            id="hero-cta-secondary"
+          >
+            View Work
+          </a>
         </div>
 
-        <div className="absolute bottom-12 flex flex-col items-center gap-4 opacity-30 animate-bounce">
-          <div className="w-px h-12 bg-white" />
-          <ChevronDown size={20} />
+        {/* Stats */}
+        <div ref={statsRef} className={styles.statsRow}>
+          {[
+            { value: 50, label: "Projects Delivered" },
+            { value: 3, label: "Years Experience" },
+            { value: 98, label: "Client Satisfaction" },
+          ].map((s, i) => (
+            <div key={i} className={styles.statItem}>
+              <span className={styles.statNumber} data-target={s.value}>0+</span>
+              <span className={styles.statLabel}>{s.label}</span>
+            </div>
+          ))}
         </div>
+      </div>
+
+      {/* Skills marquee */}
+      <div className={styles.skillsMarqueeWrap}>
+        <div className={styles.skillsFade} />
+        <div className={styles.skillsTrackOuter}>
+          <div ref={skillsTrackRef} className={styles.skillsTrack}>
+            {[...SKILLS, ...SKILLS, ...SKILLS].map((skill, i) => (
+              <div key={i} className={styles.skillPill} style={{ "--pill-color": skill.color } as React.CSSProperties}>
+                <span className={styles.pillDot} />
+                {skill.label}
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className={`${styles.skillsFade} ${styles.skillsFadeRight}`} />
+      </div>
+
+      {/* Scroll indicator */}
+      <div ref={scrollIndicatorRef} className={styles.scrollIndicator}>
+        <div className={styles.scrollLine} />
+        <ChevronDown size={16} className={styles.scrollChevron} />
       </div>
     </section>
   );

@@ -66,7 +66,7 @@ export function Testimonials() {
   const row2 = testimonials.slice(3, 6);
 
   const TestimonialCard = ({ t }: { t: typeof testimonials[0] }) => (
-    <div className="group relative flex-shrink-0 w-[350px] md:w-[450px] p-8 md:p-10 rounded-[2rem] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:bg-white/[0.04] hover:border-[var(--brand-orange)]/40 hover:shadow-[0_20px_40px_-15px_rgba(255,77,0,0.15)] mx-4 cursor-pointer">
+    <div className="group relative flex-shrink-0 w-[350px] md:w-[450px] p-8 md:p-10 rounded-[2rem] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:bg-white/[0.04] hover:border-[var(--brand-orange)]/40 hover:shadow-[0_20px_40px_-15px_rgba(255,77,0,0.15)] mx-4 cursor-pointer whitespace-normal">
       <div className="flex gap-1 text-[var(--brand-orange)] mb-6 opacity-80 group-hover:opacity-100 transition-opacity">
         {[...Array(5)].map((_, i) => (
           <Star key={i} size={16} fill="currentColor" />
