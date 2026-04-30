@@ -91,44 +91,45 @@ export function Services() {
               key={i}
               whileHover={{ y: -8, scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="service-card group relative h-[380px] overflow-hidden rounded-2xl cursor-default
-                bg-white/[0.03] backdrop-blur-xl border border-white/[0.08]
-                shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_24px_rgba(0,0,0,0.3)]
-                hover:border-white/[0.15] transition-colors duration-500"
+              className="service-card group relative h-[380px] overflow-hidden rounded-[2rem] cursor-default
+                bg-gradient-to-b from-white/[0.04] to-transparent backdrop-blur-2xl border border-white/[0.05]
+                shadow-[inset_0_1px_0_rgba(255,255,255,0.1),inset_0_0_20px_rgba(255,255,255,0.02),0_10px_40px_-10px_rgba(0,0,0,0.5)]
+                hover:border-white/[0.12] transition-colors duration-500"
             >
               {/* Scanning sweep */}
-              <div className="absolute inset-0 pointer-events-none"
+              <div className="absolute inset-0 pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-700"
                 style={{
-                  background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.03) 50%, transparent 60%)",
+                  background: "linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.04) 50%, transparent 60%)",
                   backgroundSize: "200% 100%",
-                  animation: "hud-sweep 4s linear infinite",
+                  animation: "hud-sweep 3s linear infinite",
                 }}
               />
 
               {/* Top colored glow on hover */}
               <div
-                className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                 style={{ background: `linear-gradient(to right, transparent, ${s.color}, transparent)` }}
               />
 
               {/* Ambient colored background blur on hover */}
               <div
-                className="absolute -top-20 -left-20 w-64 h-64 rounded-full opacity-0 group-hover:opacity-20 transition-opacity duration-700 pointer-events-none blur-[80px]"
+                className="absolute -top-10 -left-10 w-72 h-72 rounded-full opacity-0 group-hover:opacity-[0.15] transition-opacity duration-700 pointer-events-none blur-[60px]"
                 style={{ background: s.color }}
               />
 
               {/* Icon */}
               <motion.div 
-                className="absolute top-8 left-8 z-10"
-                whileHover={{ rotate: 5, scale: 1.1 }}
+                className="absolute top-10 left-10 z-10"
+                whileHover={{ rotate: 8, scale: 1.15 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
                 <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500"
+                  className="w-16 h-16 rounded-[1.25rem] flex items-center justify-center transition-all duration-500"
                   style={{
-                    background: `${s.color}15`,
+                    background: `linear-gradient(135deg, ${s.color}20, ${s.color}05)`,
                     color: s.color,
-                    boxShadow: `0 0 20px ${s.color}15, inset 0 0 0 1px ${s.color}30`,
+                    border: `1px solid ${s.color}30`,
+                    boxShadow: `0 8px 32px ${s.color}20, inset 0 2px 0 ${s.color}40`,
                   }}
                 >
                   {s.icon}
@@ -136,19 +137,19 @@ export function Services() {
               </motion.div>
 
               {/* Title */}
-              <div className="absolute top-28 left-8 transition-all duration-500 origin-left group-hover:top-10 group-hover:left-28 z-10">
-                <h3 className="font-display text-2xl md:text-3xl font-bold text-white drop-shadow-md">{s.title}</h3>
+              <div className="absolute top-32 left-10 transition-all duration-500 origin-left group-hover:top-12 group-hover:left-[110px] z-10">
+                <h3 className="font-display text-3xl md:text-[2rem] font-bold text-white tracking-tight drop-shadow-md">{s.title}</h3>
               </div>
 
               {/* Description */}
-              <div className="absolute top-44 left-8 right-8 transition-all duration-500 opacity-60 group-hover:opacity-100 group-hover:top-28">
-                <p className="text-sm md:text-base leading-relaxed text-white/70 line-clamp-3 group-hover:line-clamp-none">
+              <div className="absolute top-48 left-10 right-10 transition-all duration-500 opacity-70 group-hover:opacity-100 group-hover:top-36">
+                <p className="text-sm md:text-base leading-relaxed text-white/80 line-clamp-3 group-hover:line-clamp-none font-medium">
                   {s.desc}
                 </p>
-                <div className="mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100 flex items-center gap-2 text-sm font-bold"
+                <div className="mt-8 opacity-0 group-hover:opacity-100 transition-all duration-700 delay-100 flex items-center gap-2 text-sm font-bold uppercase tracking-wider"
                   style={{ color: s.color }}
                 >
-                  Explore service <ArrowRight size={16} className="group-hover:translate-x-1.5 transition-transform duration-300" />
+                  Explore service <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform duration-300" />
                 </div>
               </div>
 

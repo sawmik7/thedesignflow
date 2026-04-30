@@ -4,6 +4,7 @@ import React, { useLayoutEffect, useRef } from "react";
 import { Star } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motion } from "framer-motion";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -66,25 +67,39 @@ export function Testimonials() {
   const row2 = testimonials.slice(3, 6);
 
   const TestimonialCard = ({ t }: { t: typeof testimonials[0] }) => (
-    <div className="group relative flex-shrink-0 w-[350px] md:w-[450px] p-8 md:p-10 rounded-[2rem] bg-white/[0.02] border border-white/[0.08] backdrop-blur-xl transition-all duration-500 hover:-translate-y-2 hover:bg-white/[0.04] hover:border-[var(--brand-orange)]/40 hover:shadow-[0_20px_40px_-15px_rgba(255,77,0,0.15)] mx-4 cursor-pointer whitespace-normal">
-      <div className="flex gap-1 text-[var(--brand-orange)] mb-6 opacity-80 group-hover:opacity-100 transition-opacity">
+    <motion.div 
+      whileHover={{ y: -8, scale: 1.02, rotate: -1 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className="group relative flex-shrink-0 w-[350px] md:w-[450px] p-8 md:p-10 rounded-[2rem] 
+                 bg-gradient-to-br from-white/[0.05] to-transparent border border-white/[0.08] 
+                 backdrop-blur-2xl transition-colors duration-500 
+                 hover:bg-white/[0.08] hover:border-[var(--brand-orange)]/40 hover:shadow-[0_0_40px_-10px_rgba(255,77,0,0.2)] 
+                 mx-4 cursor-pointer whitespace-normal overflow-hidden"
+    >
+      {/* Decorative Top Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-gradient-to-r from-transparent via-white/[0.15] group-hover:via-[var(--brand-orange)]/60 to-transparent transition-colors duration-500" />
+      
+      {/* Decorative Background Blob */}
+      <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[var(--brand-orange)]/10 rounded-full blur-[50px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+
+      <div className="flex gap-1 text-[var(--brand-orange)] mb-6 opacity-80 group-hover:opacity-100 transition-opacity drop-shadow-[0_0_10px_rgba(255,77,0,0.3)]">
         {[...Array(5)].map((_, i) => (
           <Star key={i} size={16} fill="currentColor" />
         ))}
       </div>
-      <p className="font-display text-lg md:text-xl text-white/90 mb-8 leading-relaxed">
+      <p className="font-display text-lg md:text-xl text-white/90 mb-8 leading-relaxed font-medium">
         &ldquo;{t.text}&rdquo;
       </p>
-      <div className="flex items-center gap-4 mt-auto">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex items-center justify-center font-bold text-white shadow-inner group-hover:border-[var(--brand-orange)]/50 transition-colors">
+      <div className="flex items-center gap-4 mt-auto relative z-10">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--brand-orange)]/20 to-transparent border border-[var(--brand-orange)]/30 flex items-center justify-center font-bold text-white shadow-inner group-hover:scale-110 transition-transform duration-300">
           {t.name.charAt(0)}
         </div>
         <div>
           <div className="font-bold text-white group-hover:text-[var(--brand-orange)] transition-colors">{t.name}</div>
-          <div className="text-xs text-white/40 uppercase tracking-wider">{t.role}</div>
+          <div className="text-xs text-white/40 uppercase tracking-wider font-semibold">{t.role}</div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 
   return (
