@@ -135,7 +135,7 @@ export function PortfolioSlider() {
     <section
       ref={sectionRef}
       id="portfolio"
-      className="relative min-h-screen bg-transparent overflow-hidden flex items-center pt-40 pb-24 md:pt-48 z-20"
+      className="relative min-h-screen bg-transparent overflow-hidden flex items-center pt-32 pb-20 md:pt-48 md:pb-24 z-20"
     >
       {/* Film grain */}
       <div className="grain-overlay" />
@@ -156,7 +156,7 @@ export function PortfolioSlider() {
       }} />
       <div className="gradient-divider-top" />
 
-      <div className="container mx-auto max-w-7xl px-6 flex flex-col lg:flex-row items-center gap-16 lg:gap-24 relative z-10">
+      <div className="container mx-auto max-w-7xl px-5 sm:px-8 md:px-12 flex flex-col lg:flex-row items-center gap-12 lg:gap-24 relative z-10">
 
         {/* ── LEFT: Info panel ── */}
         <div ref={infoRef} className="flex-1 text-white min-w-0">

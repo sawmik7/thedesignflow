@@ -173,7 +173,7 @@ export function About() {
     <section
       ref={sectionRef}
       id="about"
-      className="relative py-28 md:py-40 px-6 bg-[#0a0a0a] text-white overflow-hidden"
+      className="relative py-20 sm:py-28 md:py-40 px-5 sm:px-8 md:px-12 bg-[#0a0a0a] text-white overflow-hidden"
     >
       {/* Background accents */}
       <div className="absolute inset-0 pointer-events-none">
@@ -186,7 +186,7 @@ export function About() {
       </div>
 
       <div className="container mx-auto max-w-7xl relative z-10">
-        <div className="grid lg:grid-cols-2 gap-16 xl:gap-28 items-center">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 xl:gap-28 items-center">
 
           {/* ── LEFT: Video Portrait ── */}
           <div className="about-video-col relative order-2 lg:order-1" style={{ perspective: "1000px" }}>

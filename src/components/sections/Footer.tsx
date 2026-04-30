@@ -113,7 +113,7 @@ export function Footer() {
         />
       </div>
 
-      <div className="container mx-auto max-w-6xl px-6 relative z-10">
+      <div className="container mx-auto max-w-6xl px-5 sm:px-8 md:px-12 relative z-10">
 
         {/* ── BIG CTA SECTION ────────────────── */}
         <div className="pt-24 pb-16 text-center border-b border-white/[0.06]">

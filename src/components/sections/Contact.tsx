@@ -96,7 +96,7 @@ export function Contact({ scrollToContact }: { scrollToContact: () => void }) {
     <section
       ref={sectionRef}
       id="contact-form"
-      className="relative py-32 md:py-44 px-6 overflow-hidden"
+      className="relative py-20 sm:py-32 md:py-44 px-5 sm:px-8 md:px-12 overflow-hidden"
       style={{ background: "#080810" }}
     >
       {/* Top divider */}
@@ -133,7 +133,7 @@ export function Contact({ scrollToContact }: { scrollToContact: () => void }) {
           </span>
         </div>
 
-        <div className="grid lg:grid-cols-[1fr_1.4fr] gap-16 xl:gap-24 items-start">
+        <div className="grid lg:grid-cols-[1fr_1.4fr] gap-12 lg:gap-16 xl:gap-24 items-start">
           {/* ── LEFT: Info panel ──────────────────── */}
           <div className="contact-left space-y-12">
             <div>

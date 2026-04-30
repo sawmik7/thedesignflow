@@ -54,7 +54,7 @@ export function Services() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="services" className="relative py-32 md:py-44 px-6 bg-[#0A0A0A] overflow-hidden">
+    <section ref={sectionRef} id="services" className="relative py-20 sm:py-32 md:py-44 px-5 sm:px-8 md:px-12 bg-[#0A0A0A] overflow-hidden">
       {/* Gradient dividers */}
       <div className="gradient-divider-top" />
       <div className="gradient-divider-bottom" />
@@ -84,7 +84,7 @@ export function Services() {
         </div>
 
         {/* Service cards grid */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
           {services.map((s, i) => (
             <div
               key={i}

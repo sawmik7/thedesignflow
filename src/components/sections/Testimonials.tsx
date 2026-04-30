@@ -88,7 +88,7 @@ export function Testimonials() {
   );
 
   return (
-    <section ref={sectionRef} id="testimonials" className="relative py-32 md:py-44 bg-[#080808] overflow-hidden">
+    <section ref={sectionRef} id="testimonials" className="relative py-20 sm:py-32 md:py-44 bg-[#080808] overflow-hidden">
       {/* Gradient dividers */}
       <div className="gradient-divider-top" />
       <div className="gradient-divider-bottom" />
@@ -101,7 +101,7 @@ export function Testimonials() {
         style={{ background: "radial-gradient(circle, rgba(59,130,246,0.04) 0%, transparent 60%)" }}
       />
 
-      <div className="container mx-auto px-6 relative z-10 mb-20">
+      <div className="container mx-auto px-5 sm:px-8 md:px-12 relative z-10 mb-20">
         <div className="testimonial-heading text-center">
           <div className="flex items-center justify-center gap-3 mb-6">
             <div className="h-[1px] w-8 bg-[var(--brand-orange)]" />
