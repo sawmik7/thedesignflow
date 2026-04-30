@@ -70,7 +70,7 @@ export function Testimonials() {
     <motion.div 
       whileHover={{ y: -8, scale: 1.02, rotate: -1 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="group relative flex-shrink-0 w-[350px] md:w-[450px] p-8 md:p-10 rounded-[2rem] 
+      className="group relative flex-shrink-0 w-[300px] sm:w-[350px] md:w-[450px] p-8 md:p-10 rounded-[2rem] 
                  bg-gradient-to-br from-white/[0.05] to-transparent border border-white/[0.08] 
                  backdrop-blur-2xl transition-colors duration-500 
                  hover:bg-white/[0.08] hover:border-[var(--brand-orange)]/40 hover:shadow-[0_0_40px_-10px_rgba(255,77,0,0.2)] 
@@ -116,7 +116,7 @@ export function Testimonials() {
         style={{ background: "radial-gradient(circle, rgba(59,130,246,0.04) 0%, transparent 60%)" }}
       />
 
-      <div className="container mx-auto px-5 sm:px-8 md:px-12 relative z-10 mb-20">
+      <div className="container mx-auto px-8 sm:px-10 md:px-12 relative z-10 mb-20">
         <div className="testimonial-heading text-center">
           <div className="flex items-center justify-center gap-3 mb-6">
             <div className="h-[1px] w-8 bg-[var(--brand-orange)]" />

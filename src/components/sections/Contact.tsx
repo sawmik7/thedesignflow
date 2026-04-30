@@ -96,7 +96,7 @@ export function Contact({ scrollToContact }: { scrollToContact: () => void }) {
     <section
       ref={sectionRef}
       id="contact-form"
-      className="relative py-20 sm:py-32 md:py-44 px-5 sm:px-8 md:px-12 overflow-hidden"
+      className="relative py-20 sm:py-32 md:py-44 px-8 sm:px-10 md:px-12 overflow-hidden"
       style={{ background: "#080810" }}
     >
       {/* Top divider */}

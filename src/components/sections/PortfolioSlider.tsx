@@ -156,7 +156,7 @@ export function PortfolioSlider() {
       }} />
       <div className="gradient-divider-top" />
 
-      <div className="container mx-auto max-w-7xl px-5 sm:px-8 md:px-12 flex flex-col lg:flex-row items-center gap-12 lg:gap-24 relative z-10">
+      <div className="container mx-auto max-w-7xl px-8 sm:px-10 md:px-12 flex flex-col lg:flex-row items-center gap-12 lg:gap-24 relative z-10">
 
         {/* ── LEFT: Info panel ── */}
         <div ref={infoRef} className="flex-1 text-white min-w-0">

@@ -173,7 +173,7 @@ export function About() {
     <section
       ref={sectionRef}
       id="about"
-      className="relative py-20 sm:py-28 md:py-40 px-5 sm:px-8 md:px-12 bg-[#0a0a0a] text-white overflow-hidden"
+      className="relative py-20 sm:py-28 md:py-40 px-8 sm:px-10 md:px-12 bg-[#0a0a0a] text-white overflow-hidden"
     >
       {/* Background accents */}
       <div className="absolute inset-0 pointer-events-none">

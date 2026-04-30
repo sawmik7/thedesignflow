@@ -55,7 +55,7 @@ export function Services() {
   }, []);
 
   return (
-    <section ref={sectionRef} id="services" className="relative py-20 sm:py-32 md:py-44 px-5 sm:px-8 md:px-12 bg-[#0A0A0A] overflow-hidden">
+    <section ref={sectionRef} id="services" className="relative py-20 sm:py-32 md:py-44 px-8 sm:px-10 md:px-12 bg-[#0A0A0A] overflow-hidden">
       {/* Gradient dividers */}
       <div className="gradient-divider-top" />
       <div className="gradient-divider-bottom" />
