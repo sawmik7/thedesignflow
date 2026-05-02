@@ -155,6 +155,29 @@ export function Hero({ scrollToContact, entranceActive = true }: HeroProps) {
       scrollTrigger: { trigger: container.current, start: "top top", end: "bottom top", scrub: 1 },
     });
 
+    // Stats counter animation
+    const stats = gsap.utils.toArray<HTMLElement>('.stat-number');
+    stats.forEach((stat) => {
+      const target = parseFloat(stat.getAttribute('data-target') || "0");
+      const suffix = stat.getAttribute('data-suffix') || "";
+      
+      ScrollTrigger.create({
+        trigger: container.current,
+        start: "top 80%",
+        onEnter: () => {
+          gsap.to({ val: 0 }, {
+            val: target,
+            duration: 2,
+            ease: "power2.out",
+            onUpdate: function() {
+              stat.innerHTML = Math.round(this.targets()[0].val) + suffix;
+            }
+          });
+        },
+        once: true
+      });
+    });
+
   }, { scope: container, dependencies: [entranceActive] });
 
   // Magnetic CTA
@@ -250,15 +273,23 @@ export function Hero({ scrollToContact, entranceActive = true }: HeroProps) {
         </div>
 
         {/* Stats */}
-        <div ref={statsRef} className={styles.statsRow}>
+        <div ref={statsRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12 mt-12 w-full max-w-4xl mx-auto px-4">
           {[
-            { value: 50, label: "Projects Delivered" },
-            { value: 3, label: "Years Experience" },
-            { value: 98, label: "Client Satisfaction" },
+            { value: 280, label: "Projects Built", suffix: "+" },
+            { value: 10, label: "Years Active", suffix: "+" },
+            { value: 100, label: "Client Satisfaction", suffix: "%" },
           ].map((s, i) => (
-            <div key={i} className={styles.statItem}>
-              <span className={styles.statNumber} data-target={s.value}>0+</span>
-              <span className={styles.statLabel}>{s.label}</span>
+            <div key={i} className="flex flex-col items-center justify-center text-center group">
+              <span 
+                className={`stat-number ${styles.statNumber} font-tabular-nums text-4xl md:text-5xl font-black text-white mb-2`} 
+                data-target={s.value} 
+                data-suffix={s.suffix}
+              >
+                0{s.suffix}
+              </span>
+              <span className="text-sm md:text-base font-bold uppercase tracking-widest text-white/60 group-hover:text-[var(--brand-orange)] transition-colors duration-300">
+                {s.label}
+              </span>
             </div>
           ))}
         </div>

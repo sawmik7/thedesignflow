@@ -212,6 +212,9 @@
   gap: 0;
   overflow: visible;
   will-change: transform, opacity;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .headlineLine {
@@ -289,6 +292,7 @@
   justify-content: center;
   gap: 0;
   padding: 1.1rem 2.25rem;
+  min-height: 48px;
   border-radius: 9999px;
   font-size: 0.8rem;
   font-weight: 800;
@@ -345,6 +349,7 @@
   display: inline-flex;
   align-items: center;
   padding: 1.1rem 2.25rem;
+  min-height: 48px;
   border-radius: 9999px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   font-size: 0.8rem;
@@ -364,35 +369,6 @@
   border-color: rgba(255, 255, 255, 0.28);
   color: white;
   background: rgba(255, 255, 255, 0.06);
-}
-
-/* ─────────────────────────────────────
-   STATS ROW
-───────────────────────────────────── */
-.statsRow {
-  display: flex;
-  align-items: center;
-  gap: 3rem;
-  margin-bottom: 3.5rem;
-}
-
-.statItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  position: relative;
-}
-
-.statItem + .statItem::before {
-  content: "";
-  position: absolute;
-  left: -1.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1px;
-  height: 32px;
-  background: rgba(255, 255, 255, 0.1);
 }
 
 .statNumber {
@@ -580,6 +556,12 @@
   .headline {
     font-size: clamp(1.8rem, 11vw, 2.5rem);
     letter-spacing: -0.02em;
+  }
+}
+
+@media (max-width: 768px) {
+  .skillsTrack {
+    animation-duration: 60s; /* Reduce animation speed by 50% on mobile (originally 30s) */
   }
 }
 

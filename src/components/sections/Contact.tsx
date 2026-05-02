@@ -262,12 +262,12 @@ export function Contact({ scrollToContact }: { scrollToContact: () => void }) {
                 {/* Company + Budget */}
                 <div className="grid sm:grid-cols-2 gap-6">
                   <FormField label="Company" type="text" placeholder="Acme Inc." />
-                  <div className="space-y-2">
+                  <div className="flex flex-col gap-4">
                     <label className="block text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: "rgba(255,255,255,0.38)" }}>
                       Budget Range
                     </label>
                     <select
-                      className="w-full rounded-xl px-4 py-3 text-sm font-medium transition-all duration-300 appearance-none cursor-pointer outline-none"
+                      className="w-full min-h-[48px] rounded-xl px-4 py-3 text-sm font-medium transition-all duration-300 appearance-none cursor-pointer outline-none"
                       style={{
                         background: "rgba(255,255,255,0.05)",
                         border: "1px solid rgba(255,255,255,0.1)",
@@ -286,7 +286,7 @@ export function Contact({ scrollToContact }: { scrollToContact: () => void }) {
                 </div>
 
                 {/* Service chips */}
-                <div className="space-y-3">
+                <div className="flex flex-col gap-4">
                   <label className="block text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: "rgba(255,255,255,0.38)" }}>
                     Services Needed
                   </label>
@@ -310,7 +310,7 @@ export function Contact({ scrollToContact }: { scrollToContact: () => void }) {
                 </div>
 
                 {/* Message */}
-                <div className="space-y-2">
+                <div className="flex flex-col gap-4">
                   <label className="block text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: "rgba(255,255,255,0.38)" }}>
                     Project Details
                   </label>
@@ -318,7 +318,7 @@ export function Contact({ scrollToContact }: { scrollToContact: () => void }) {
                     rows={4}
                     required
                     placeholder="Describe your project, goals, timeline..."
-                    className="w-full rounded-xl px-4 py-3 text-sm font-medium resize-none outline-none transition-all duration-300"
+                    className="w-full min-h-[48px] rounded-xl px-4 py-3 text-sm font-medium resize-none outline-none transition-all duration-300"
                     style={{
                       background: "rgba(255,255,255,0.05)",
                       border: "1px solid rgba(255,255,255,0.1)",
@@ -333,7 +333,7 @@ export function Contact({ scrollToContact }: { scrollToContact: () => void }) {
                 <button
                   type="submit"
                   disabled={sending}
-                  className="group w-full py-4 rounded-2xl font-black text-sm uppercase tracking-[0.18em] flex items-center justify-center gap-3 transition-all duration-400 active:scale-[0.98] relative overflow-hidden"
+                  className="group w-full min-h-[48px] py-4 rounded-2xl font-black text-sm uppercase tracking-[0.18em] flex items-center justify-center gap-3 transition-all duration-400 active:scale-[0.98] relative overflow-hidden"
                   style={{
                     background: sending ? "rgba(255,77,0,0.5)" : "linear-gradient(135deg,#FF4D00 0%,#FF7633 100%)",
                     color: "white",
@@ -384,7 +384,7 @@ function FormField({
   required?: boolean;
 }) {
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-4">
       <label className="block text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: "rgba(255,255,255,0.38)" }}>
         {label}
       </label>
@@ -392,7 +392,7 @@ function FormField({
         type={type}
         required={required}
         placeholder={placeholder}
-        className="w-full rounded-xl px-4 py-3 text-sm font-medium outline-none transition-all duration-300"
+        className="w-full min-h-[48px] rounded-xl px-4 py-3 text-sm font-medium outline-none transition-all duration-300"
         style={{
           background: "rgba(255,255,255,0.05)",
           border: "1px solid rgba(255,255,255,0.1)",

@@ -225,15 +225,25 @@ export function About() {
                 </div>
               )}
 
-              {/* Video */}
+              {/* Static mobile fallback image (saves bandwidth) */}
+              <picture className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 sm:hidden block">
+                <img 
+                  src="https://images.unsplash.com/photo-1605106702734-205df224ecce?w=800&q=85" 
+                  alt="Hasanul Portrait" 
+                  className="w-full h-full object-cover"
+                />
+              </picture>
+
+              {/* Video (Desktop & Tablet) */}
               <video
                 ref={videoRef}
-                src="/assets/images/Man_in_suit_202604050234.mp4"
-                poster="/assets/images/Professional_headshot_of_202604050232.png"
+                src="https://player.vimeo.com/external/370331493.sd.mp4?s=19056195c1082c19e59d08eeaa4ebbf00d5a3ec5&profile_id=164&oauth2_token_id=57447761"
+                poster="https://images.unsplash.com/photo-1605106702734-205df224ecce?w=800&q=85"
                 loop
+                autoPlay
                 muted={isMuted}
                 playsInline
-                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 hidden sm:block"
               />
 
               {/* HUD: top-left badge */}

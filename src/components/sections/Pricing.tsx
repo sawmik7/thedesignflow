@@ -3,6 +3,7 @@
 import React, { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motion } from "framer-motion";
 import {
   Layout,
   Clock,
@@ -154,12 +155,15 @@ export function Pricing({ scrollToContact }: { scrollToContact: () => void }) {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 items-start">
           {packages.map((pkg, i) => (
-            <div
+            <motion.div
               key={i}
-              className={`pricing-card relative rounded-[2rem] overflow-hidden flex flex-col h-full transition-all duration-500 group
+              whileHover={{ y: -12, scale: pkg.highlight ? 1.07 : 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className={`pricing-card relative rounded-[2rem] overflow-hidden flex flex-col h-full transition-shadow duration-500 group
                 bg-white/[0.03] backdrop-blur-xl border
                 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_4px_24px_rgba(0,0,0,0.3)]
-                hover:-translate-y-3 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_30px_80px_rgba(0,0,0,0.5)]
+                hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_30px_80px_rgba(0,0,0,0.5)]
                 ${pkg.highlight
                   ? "border-[var(--brand-orange)]/30 scale-105 z-10"
                   : "border-white/[0.08] hover:border-white/[0.15]"
@@ -268,7 +272,7 @@ export function Pricing({ scrollToContact }: { scrollToContact: () => void }) {
                   </li>
                 </ul>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
