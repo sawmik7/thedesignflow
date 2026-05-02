@@ -281,13 +281,13 @@ export function Hero({ scrollToContact, entranceActive = true }: HeroProps) {
           ].map((s, i) => (
             <div key={i} className="flex flex-col items-center justify-center text-center group">
               <span 
-                className={`stat-number ${styles.statNumber} font-tabular-nums text-4xl md:text-5xl font-black text-white mb-2`} 
+                className={`stat-number ${styles.statNumber} font-tabular-nums text-[2rem] font-black leading-none text-white`} 
                 data-target={s.value} 
                 data-suffix={s.suffix}
               >
                 0{s.suffix}
               </span>
-              <span className="text-sm md:text-base font-bold uppercase tracking-widest text-white/60 group-hover:text-[var(--brand-orange)] transition-colors duration-300">
+              <span className="block text-[9px] font-black uppercase tracking-[0.25em] text-neutral-500 mt-2 group-hover:text-[var(--brand-orange)] transition-colors duration-300">
                 {s.label}
               </span>
             </div>
@@ -312,10 +312,15 @@ export function Hero({ scrollToContact, entranceActive = true }: HeroProps) {
       </div>
 
       {/* Scroll indicator */}
-      <div ref={scrollIndicatorRef} className={styles.scrollIndicator}>
-        <div className={styles.scrollLine} />
-        <ChevronDown size={16} className={styles.scrollChevron} />
-      </div>
+      <button 
+        ref={scrollIndicatorRef} 
+        onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: "smooth" })}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center justify-center cursor-pointer transition-opacity duration-300 hover:opacity-80 w-12 h-12 sm:w-auto sm:h-auto pb-4 sm:pb-0"
+        aria-label="Scroll to About section"
+      >
+        <div className="w-[1px] h-12 sm:h-16 bg-gradient-to-b from-transparent via-white/30 to-white/80 animate-[pulse_2s_infinite]" />
+        <ChevronDown size={16} className="text-white mt-2 animate-bounce" />
+      </button>
     </section>
   );
 }

@@ -212,9 +212,8 @@
   gap: 0;
   overflow: visible;
   will-change: transform, opacity;
-  word-break: break-word;
-  overflow-wrap: break-word;
-  hyphens: auto;
+  word-break: keep-all;
+  white-space: nowrap;
 }
 
 .headlineLine {
@@ -556,6 +555,14 @@
   .headline {
     font-size: clamp(1.8rem, 11vw, 2.5rem);
     letter-spacing: -0.02em;
+    white-space: normal;
+    word-break: normal;
+  }
+}
+
+@media (max-width: 359px) {
+  .headline {
+    overflow-wrap: break-word;
   }
 }
 

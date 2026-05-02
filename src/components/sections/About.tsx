@@ -237,14 +237,21 @@ export function About() {
               {/* Video (Desktop & Tablet) */}
               <video
                 ref={videoRef}
-                src="https://player.vimeo.com/external/370331493.sd.mp4?s=19056195c1082c19e59d08eeaa4ebbf00d5a3ec5&profile_id=164&oauth2_token_id=57447761"
-                poster="https://images.unsplash.com/photo-1605106702734-205df224ecce?w=800&q=85"
-                loop
+                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 hidden sm:block"
                 autoPlay
                 muted={isMuted}
+                loop
                 playsInline
-                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 hidden sm:block"
-              />
+                preload="metadata"
+                poster="/assets/images/Professional_headshot_of_202604050232.png"
+              >
+                <source src="/assets/images/Man_in_suit_202604050234.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+              {/* Fallback overlay if video fails to load */}
+              <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/80 hidden" id="video-fallback">
+                <img src="/assets/images/Professional_headshot_of_202604050232.png" alt="Hasanul - Brand Strategist & AI Architect" className="w-full h-full object-cover" />
+              </div>
 
               {/* HUD: top-left badge */}
               <div className="absolute top-5 left-5 z-30 flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-white/5 backdrop-blur border border-white/10">
