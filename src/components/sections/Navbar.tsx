@@ -72,6 +72,14 @@ export function Navbar({ isMenuOpen, setIsMenuOpen, isScrolled, scrollToContact 
                 <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-[var(--brand-orange)] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
               </a>
             ))}
+            {/* Blog link — separate page route */}
+            <a
+              href="/blog"
+              className="group relative py-1 hover:text-white transition-colors duration-300 text-indigo-400 hover:text-indigo-300"
+            >
+              Blog
+              <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-indigo-400 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out" />
+            </a>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -119,6 +127,16 @@ export function Navbar({ isMenuOpen, setIsMenuOpen, isScrolled, scrollToContact 
             </a>
           </div>
         ))}
+        {/* Blog — mobile */}
+        <div className="overflow-hidden mb-2">
+          <a
+            href="/blog"
+            onClick={() => setIsMenuOpen(false)}
+            className="mobile-menu-item block font-display text-4xl sm:text-6xl font-black uppercase tracking-tight text-indigo-400 hover:text-indigo-300 transition-colors duration-300 py-2"
+          >
+            Blog
+          </a>
+        </div>
         <div className="overflow-hidden mb-2">
           <button
             onClick={() => {

@@ -96,7 +96,7 @@ export function Contact({ scrollToContact }: { scrollToContact: () => void }) {
     <section
       ref={sectionRef}
       id="contact-form"
-      className="relative py-20 sm:py-32 md:py-44 px-8 sm:px-10 md:px-12 overflow-hidden"
+      className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-8 overflow-hidden"
       style={{ background: "#080810" }}
     >
       {/* Top divider */}
@@ -138,8 +138,7 @@ export function Contact({ scrollToContact }: { scrollToContact: () => void }) {
           <div className="contact-left space-y-12">
             <div>
               <h2
-                className="font-display font-black tracking-tighter uppercase leading-[0.9] text-white mb-6"
-                style={{ fontSize: "clamp(2.8rem,5vw,5rem)" }}
+                className="font-display font-black tracking-tighter uppercase leading-[0.9] text-white mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-[5rem]"
               >
                 Let&apos;s Build<br />
                 <span
@@ -245,7 +244,7 @@ export function Contact({ scrollToContact }: { scrollToContact: () => void }) {
             ) : (
               <form
                 onSubmit={handleSubmit}
-                className="rounded-3xl p-8 md:p-10 space-y-7"
+                className="rounded-3xl p-6 sm:p-8 md:p-10 space-y-6"
                 style={{
                   background: "rgba(255,255,255,0.025)",
                   border: "1px solid rgba(255,255,255,0.08)",
@@ -254,20 +253,20 @@ export function Contact({ scrollToContact }: { scrollToContact: () => void }) {
                 }}
               >
                 {/* Name + Email row */}
-                <div className="grid sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <FormField label="Full Name" type="text" placeholder="John Doe" required />
                   <FormField label="Email Address" type="email" placeholder="john@company.com" required />
                 </div>
 
                 {/* Company + Budget */}
-                <div className="grid sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <FormField label="Company" type="text" placeholder="Acme Inc." />
-                  <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-3">
                     <label className="block text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: "rgba(255,255,255,0.38)" }}>
                       Budget Range
                     </label>
                     <select
-                      className="w-full min-h-[48px] rounded-xl px-4 py-3 text-sm font-medium transition-all duration-300 appearance-none cursor-pointer outline-none"
+                      className="w-full min-h-[48px] rounded-xl px-4 py-3 text-base font-medium transition-all duration-300 appearance-none cursor-pointer outline-none"
                       style={{
                         background: "rgba(255,255,255,0.05)",
                         border: "1px solid rgba(255,255,255,0.1)",
@@ -318,7 +317,7 @@ export function Contact({ scrollToContact }: { scrollToContact: () => void }) {
                     rows={4}
                     required
                     placeholder="Describe your project, goals, timeline..."
-                    className="w-full min-h-[48px] rounded-xl px-4 py-3 text-sm font-medium resize-none outline-none transition-all duration-300"
+                    className="w-full min-h-[120px] rounded-xl px-4 py-3 text-base font-medium resize-none outline-none transition-all duration-300"
                     style={{
                       background: "rgba(255,255,255,0.05)",
                       border: "1px solid rgba(255,255,255,0.1)",
@@ -333,7 +332,7 @@ export function Contact({ scrollToContact }: { scrollToContact: () => void }) {
                 <button
                   type="submit"
                   disabled={sending}
-                  className="group w-full min-h-[48px] py-4 rounded-2xl font-black text-sm uppercase tracking-[0.18em] flex items-center justify-center gap-3 transition-all duration-400 active:scale-[0.98] relative overflow-hidden"
+                  className="group w-full min-h-[48px] py-4 rounded-2xl font-black text-base uppercase tracking-[0.18em] flex items-center justify-center gap-3 transition-all duration-400 active:scale-[0.98] relative overflow-hidden"
                   style={{
                     background: sending ? "rgba(255,77,0,0.5)" : "linear-gradient(135deg,#FF4D00 0%,#FF7633 100%)",
                     color: "white",
@@ -392,7 +391,7 @@ function FormField({
         type={type}
         required={required}
         placeholder={placeholder}
-        className="w-full min-h-[48px] rounded-xl px-4 py-3 text-sm font-medium outline-none transition-all duration-300"
+        className="w-full min-h-[48px] rounded-xl px-4 py-3 text-base font-medium outline-none transition-all duration-300"
         style={{
           background: "rgba(255,255,255,0.05)",
           border: "1px solid rgba(255,255,255,0.1)",

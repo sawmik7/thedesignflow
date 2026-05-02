@@ -11,6 +11,7 @@ import { About } from "@/components/sections/About";
 import { Contact } from "@/components/sections/Contact";
 import { Footer } from "@/components/sections/Footer";
 import { Preloader } from "@/components/ui/Preloader";
+import { LatestInsights } from "@/components/sections/LatestInsights";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,6 +45,7 @@ export default function Home() {
         <Pricing scrollToContact={scrollToContact} />
         <Testimonials />
         <About />
+        <LatestInsights />
         <Contact scrollToContact={scrollToContact} />
         <Footer />
       </div>
