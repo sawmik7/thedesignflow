@@ -1,0 +1,268 @@
+er-vesper .shiki span[class*="token-comment"] { color: #6C757D !important; }
+.code-wrapper-vesper .shiki span[class*="token-class-name"] { color: #C2410C !important; }
+.code-wrapper-vesper .shiki span[class*="token-property"] { color: #000000 !important; }
+
+
+.code-wrapper-vesper .shiki[style*="--shiki-light"],
+.code-wrapper-vesper .shiki[style*="--shiki-light"] code {
+  color: #000000 !important;
+}
+.code-wrapper-vesper .shiki span[style*="--shiki-light"] {
+  color: inherit !important;
+}
+.code-wrapper-vesper .shiki span[style*="--shiki-light:#D73A49"] {
+  color: #495057 !important;
+  font-weight: 500;
+}
+.code-wrapper-vesper .shiki span[style*="--shiki-light:#032F62"] {
+  color: #146C43 !important;
+}
+.code-wrapper-vesper .shiki span[style*="--shiki-light:#6F42C1"] {
+  color: #C2410C !important;
+}
+.dark .code-wrapper-vesper .shiki[style*="--shiki-dark"],
+.dark .code-wrapper-vesper .shiki[style*="--shiki-dark"] code {
+  color: #FFF !important;
+}
+.dark .code-wrapper-vesper .shiki span[style*="--shiki-dark"] {
+  color: inherit !important;
+}
+.dark .code-wrapper-vesper .shiki span[style*="--shiki-dark:#F97583"] {
+  color: #A0A0A0 !important;
+  font-weight: 500;
+}
+.dark .code-wrapper-vesper .shiki span[style*="--shiki-dark:#9ECBFF"] {
+  color: #99FFE4 !important;
+}
+.dark .code-wrapper-vesper .shiki span[style*="--shiki-dark:#B392F0"] {
+  color: #FFC799 !important;
+}
+npx shadcn@latest add https://21st.dev/r/shivendra9795kumar/halide-topo-heroHow to useCopy promptCopy codeView code
+.code-wrapper-vesper .shiki,
+.code-wrapper-vesper .shiki pre {
+  background-color: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: 'Consolas', 'Courier New', monospace !important;
+  line-height: 1.55 !important;
+}
+.code-wrapper-vesper .shiki code {
+  display: inline-block;
+  min-width: 100%;
+  color: #000000;
+}
+.code-wrapper-vesper .shiki span[style*="color"] { 
+  color: inherit !important; 
+}
+.code-wrapper-vesper .shiki span[class*="token-keyword"],
+.code-wrapper-vesper .shiki span[style*="#D73A49"] { color: #495057 !important; font-weight: 500; }
+.code-wrapper-vesper .shiki span[class*="token-string"],
+.code-wrapper-vesper .shiki span[style*="#032F62"] { color: #146C43 !important; }
+.code-wrapper-vesper .shiki span[class*="token-function"],
+.code-wrapper-vesper .shiki span[class*="token-tag"],
+.code-wrapper-vesper .shiki span[style*="#6F42C1"] { color: #C2410C !important; }
+.code-wrapper-vesper .shiki span[class*="token-punctuation"],
+.code-wrapper-vesper .shiki span[class*="token-operator"] { color: #495057 !important; }
+.code-wrapper-vesper .shiki span[class*="token-comment"] { color: #6C757D !important; }
+.code-wrapper-vesper .shiki span[class*="token-class-name"] { color: #C2410C !important; }
+.code-wrapper-vesper .shiki span[class*="token-property"] { color: #000000 !important; }
+
+
+.code-wrapper-vesper .shiki[style*="--shiki-light"],
+.code-wrapper-vesper .shiki[style*="--shiki-light"] code {
+  color: #000000 !important;
+}
+.code-wrapper-vesper .shiki span[style*="--shiki-light"] {
+  color: inherit !important;
+}
+.code-wrapper-vesper .shiki span[style*="--shiki-light:#D73A49"] {
+  color: #495057 !important;
+  font-weight: 500;
+}
+.code-wrapper-vesper .shiki span[style*="--shiki-light:#032F62"] {
+  color: #146C43 !important;
+}
+.code-wrapper-vesper .shiki span[style*="--shiki-light:#6F42C1"] {
+  color: #C2410C !important;
+}
+.dark .code-wrapper-vesper .shiki[style*="--shiki-dark"],
+.dark .code-wrapper-vesper .shiki[style*="--shiki-dark"] code {
+  color: #FFF !important;
+}
+.dark .code-wrapper-vesper .shiki span[style*="--shiki-dark"] {
+  color: inherit !important;
+}
+.dark .code-wrapper-vesper .shiki span[style*="--shiki-dark:#F97583"] {
+  color: #A0A0A0 !important;
+  font-weight: 500;
+}
+.dark .code-wrapper-vesper .shiki span[style*="--shiki-dark:#9ECBFF"] {
+  color: #99FFE4 !important;
+}
+.dark .code-wrapper-vesper .shiki span[style*="--shiki-dark:#B392F0"] {
+  color: #FFC799 !important;
+}
+import React, { useEffect, useRef } from 'react';
+
+const HalideLanding: React.FC = () => {
+  const canvasRef = useRef&#x3C;HTMLDivElement>(null);
+  const layersRef = useRef&#x3C;HTMLDivElement[]>([]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Mouse Parallax Logic
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (window.innerWidth / 2 - e.pageX) / 25;
+      const y = (window.innerHeight / 2 - e.pageY) / 25;
+
+      // Rotate the 3D Canvas
+      canvas.style.transform = `rotateX(${55 + y / 2}deg) rotateZ(${-25 + x / 2}deg)`;
+
+      // Apply depth shift to layers
+      layersRef.current.forEach((layer, index) => {
+        if (!layer) return;
+        const depth = (index + 1) * 15;
+        const moveX = x * (index + 1) * 0.2;
+        const moveY = y * (index + 1) * 0.2;
+        layer.style.transform = `translateZ(${depth}px) translate(${moveX}px, ${moveY}px)`;
+      });
+    };
+
+    // Entrance Animation
+    canvas.style.opacity = '0';
+    canvas.style.transform = 'rotateX(90deg) rotateZ(0deg) scale(0.8)';
+    
+    const timeout = setTimeout(() => {
+      canvas.style.transition = 'all 2.5s cubic-bezier(0.16, 1, 0.3, 1)';
+      canvas.style.opacity = '1';
+      canvas.style.transform = 'rotateX(55deg) rotateZ(-25deg) scale(1)';
+    }, 300);
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  return (
+    &#x3C;>
+      &#x3C;style>{`
+        :root {
+          --bg: #0a0a0a;
+          --silver: #e0e0e0;
+          --accent: #ff3c00;
+          --grain-opacity: 0.15;
+        }
+
+        .halide-body {
+          background-color: var(--bg);
+          color: var(--silver);
+          font-family: 'Syncopate', sans-serif;
+          overflow: hidden;
+          height: 100vh;
+          width: 100vw;
+          margin: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .halide-grain {
+          position: fixed;
+          top: 0; left: 0; width: 100%; height: 100%;
+          pointer-events: none;
+          z-index: 100;
+          opacity: var(--grain-opacity);
+        }
+
+        .viewport {
+          perspective: 2000px;
+          width: 100vw; height: 100vh;
+          display: flex; align-items: center; justify-content: center;
+          overflow: hidden;
+        }
+
+        .canvas-3d {
+          position: relative;
+          width: 800px; height: 500px;
+          transform-style: preserve-3d;
+          transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .layer {
+          position: absolute;
+          inset: 0;
+          border: 1px solid rgba(224, 224, 224, 0.1);
+          background-size: cover;
+          background-position: center;
+          transition: transform 0.5s ease;
+        }
+
+        .layer-1 { background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&#x26;fit=crop&#x26;q=80&#x26;w=1200'); filter: grayscale(1) contrast(1.2) brightness(0.5); }
+        .layer-2 { background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&#x26;fit=crop&#x26;q=80&#x26;w=1200'); filter: grayscale(1) contrast(1.1) brightness(0.7); opacity: 0.6; mix-blend-mode: screen; }
+        .layer-3 { background-image: url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&#x26;fit=crop&#x26;q=80&#x26;w=1200'); filter: grayscale(1) contrast(1.3) brightness(0.8); opacity: 0.4; mix-blend-mode: overlay; }
+
+        .contours {
+          position: absolute;
+          width: 200%; height: 200%;
+          top: -50%; left: -50%;
+          background-image: repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 40px, rgba(255,255,255,0.05) 41px, transparent 42px);
+          transform: translateZ(120px);
+          pointer-events: none;
+        }
+
+        .interface-grid {
+          position: fixed;
+          inset: 0;
+          padding: 4rem;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-template-rows: auto 1fr auto;
+          z-index: 10;
+          pointer-events: none;
+        }
+
+        .hero-title {
+          grid-column: 1 / -1;
+          align-self: center;
+          font-size: clamp(3rem, 10vw, 10rem);
+          line-height: 0.85;
+          letter-spacing: -0.04em;
+          mix-blend-mode: difference;
+        }
+
+        .cta-button {
+          pointer-events: auto;
+          background: var(--silver);
+          color: var(--bg);
+          padding: 1rem 2rem;
+          text-decoration: none;
+          font-weight: 700;
+          clip-path: polygon(0 0, 100% 0, 100% 70%, 85% 100%, 0 100%);
+          transition: 0.3s;
+        }
+
+        .cta-button:hover { background: var(--accent); transform: translateY(-5px); }
+
+        .scroll-hint {
+          position: absolute;
+          bottom: 2rem; left: 50%;
+          width: 1px; height: 60px;
+          background: linear-gradient(to bottom, var(--silver), transparent);
+          animation: flow 2s infinite ease-in-out;
+        }
+
+        @keyframes flow {
+          0%, 100% { transform: scaleY(0); transform-origin: top; }
+          50% { transform: scaleY(1); transform-origin: top; }
+          51% { transform: scaleY(1); transform-origin: bottom; }
+        }
+      `}&#x3C;/style>
+
+      &#x3C;div className="halide-body">
+        {/* SVG Filter for Grain */}
+        &#x3C;svg style={{ position: 'absolute', width: 0, height: 0<span style="--shi

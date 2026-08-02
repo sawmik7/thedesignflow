@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 150">
+  <!-- Left Pill (Slanted) -->
+  <rect x="50" y="25" width="22" height="90" rx="11" fill="#FFFFFF" transform="rotate(-30 61 70)" />
+  <!-- Right Pill (Slanted) -->
+  <rect x="90" y="25" width="22" height="90" rx="11" fill="#FFFFFF" transform="rotate(-30 101 70)" />
+  <!-- Cyan Dot -->
+  <circle cx="140" cy="100" r="13" fill="#00E6DF" />
+</svg>

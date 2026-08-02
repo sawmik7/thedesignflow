@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://thedesignflow.website</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/studio</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/work</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/blog</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/contact</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/blog/future-of-saas-ui-ux-2025</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&amp;fit=crop&amp;q=80&amp;w=1200</image:loc>
+      <image:title>The Future of SaaS UI/UX in 2025</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/blog/ai-automation-saving-founders-time</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&amp;fit=crop&amp;q=80&amp;w=1200</image:loc>
+      <image:title>How AI Automation is Saving Founders 20+ Hours/Week</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/blog/why-brand-identity-matters</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&amp;fit=crop&amp;q=80&amp;w=1200</image:loc>
+      <image:title>Why Brand Identity Matters More Than Your Product</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/blog/n8n-vs-zapier-vs-make-comparison</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&amp;fit=crop&amp;q=80&amp;w=1200</image:loc>
+      <image:title>n8n vs Zapier vs Make: Which AI Automation Tool is Right for Your Business?</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/blog/nextjs-website-development-cost-2025</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&amp;fit=crop&amp;q=80&amp;w=1200</image:loc>
+      <image:title>What Does a High-Performance Next.js Website Cost in 2025?</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/work/01-brandpulse-identity</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://thedesignflow.website/projects/brandpulse.png</image:loc>
+      <image:title>BrandPulse Identity</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/work/02-flowai-dashboard</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://thedesignflow.website/projects/flowai.png</image:loc>
+      <image:title>FlowAI Dashboard</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/work/03-nexus-automations</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://thedesignflow.website/projects/nexus.png</image:loc>
+      <image:title>Nexus Automations</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/work/04-aura-e-commerce</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://thedesignflow.website/projects/aura.png</image:loc>
+      <image:title>Aura E-Commerce</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/work/05-mindstack-saas</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://thedesignflow.website/projects/mindstack.png</image:loc>
+      <image:title>MindStack SaaS</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://thedesignflow.website/work/06-cortex-ai-brand</loc>
+    <lastmod>2026-08-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://thedesignflow.website/projects/cortex.png</image:loc>
+      <image:title>Cortex AI Brand</image:title>
+    </image:image>
+  </url>
+</urlset>

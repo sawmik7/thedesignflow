@@ -1,0 +1,4 @@
+Company,Contact Person,Title,Email,LinkedIn Profile,Date Contacted,First Message Type,Follow-up 1 Date,Follow-up 2 Date,Status,Notes
+Acme Corp,Jane Doe,Founder & CEO,jane@acme.com,https://www.linkedin.com/in/janedoe,2026-07-15,LinkedIn Connection,2026-07-18,,Replied,Interested in SaaS UI/UX design package. Scheduled demo call.
+BetaTech,John Smith,VP of Product,john@betatech.io,https://www.linkedin.com/in/johnsmith,2026-07-16,Cold Email,,,Contacted,Sent Variation 1 email. Waiting for response.
+GammaFlow,Alice Johnson,Co-Founder,alice@gammaflow.ai,https://www.linkedin.com/in/alicejohnson,2026-07-14,LinkedIn Connection,2026-07-17,,Followed Up,Accepted connection sent brand identity follow-up.

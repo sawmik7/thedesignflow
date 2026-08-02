@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Automation — The Design Flow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #050505; overflow: hidden; }
+
+    #ai-root {
+      width: 1920px; height: 1080px;
+      position: relative; overflow: hidden;
+      background: #050505;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* ── NOISE TEXTURE OVERLAY ── */
+    .noise {
+      position: absolute; inset: 0; pointer-events: none; z-index: 100;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    /* ── SPLIT PANEL ── */
+    .panel-left {
+      position: absolute; left: 0; top: 0;
+      width: 960px; height: 1080px;
+      background: #050505;
+    }
+    .panel-right {
+      position: absolute; right: 0; top: 0;
+      width: 960px; height: 1080px;
+      background: #080808;
+      border-left: 1px solid rgba(16,185,129,0.08);
+    }
+
+    /* ── AMBIENT GLOWS ── */
+    .glow-green {
+      position: absolute;
+      width: 1100px; height: 1100px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(16,185,129,0.08) 0%, transparent 65%);
+      top: 50%; left: 35%; transform: translate(-50%,-50%);
+      pointer-events: none;
+    }
+    .glow-gold {
+      position: absolute;
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(200,169,110,0.05) 0%, transparent 65%);
+      top: 15%; right: 5%;
+      pointer-events: none;
+    }
+    .glow-right {
+      position: absolute;
+      width: 800px; height: 800px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(16,185,129,0.06) 0%, transparent 65%);
+      top: 50%; right: 80px; transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    /* ── GRID ── */
+    .grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(16,185,129,0.018) 0px, rgba(16,185,129,0.018) 1px, transparent 1px, transparent 96px),
+        repeating-linear-gradient(90deg, rgba(16,185,129,0.018) 0px, rgba(16,185,129,0.018) 1px, transparent 1px, transparent 96px);
+    }
+
+    /* ── VERTICAL RULE ── */
+    .v-rule {
+      position: absolute; width: 1px; top: 0; bottom: 0;
+      background: linear-gradient(to bottom, transparent 0%, rgba(16,185,129,0.3) 30%, rgba(16,185,129,0.3) 70%, transparent 100%);
+      transform-origin: top;
+    }
+    .v-rule-1 { left: 100px; }
+    .v-rule-2 { left: 960px; opacity: 0.15; }
+
+    /* ── HORIZONTAL RULES ── */
+    .h-rule {
+      position: absolute; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(16,185,129,0.15) 20%, rgba(16,185,129,0.15) 80%, transparent);
+    }
+    .h-rule-top { top: 160px; }
+    .h-rule-bottom { bottom: 160px; }
+
+    /* ── GHOST LETTER ── */
+    .ghost-AI {
+      position: absolute;
+      font-size: 800px; font-weight: 900;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(16,185,129,0.04);
+      letter-spacing: -0.06em;
+      left: -40px; top: -80px;
+      line-height: 1; pointer-events: none; user-select: none;
+    }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      position: absolute; left: 160px; top: 80px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .status-dot { width: 7px; height: 7px; background: #FF4D00; border-radius: 50%; }
+    .status-label {
+      font-size: 10px; letter-spacing: 0.38em; text-transform: uppercase;
+      color: rgba(200,169,110,0.55); font-family: 'Courier New', monospace;
+    }
+
+    /* ── MAIN CONTENT (LEFT) ── */
+    .content {
+      position: absolute; left: 160px; top: 50%;
+      transform: translateY(-50%); width: 700px;
+    }
+
+    .eyebrow {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 36px;
+    }
+    .eyebrow-line { width: 56px; height: 1px; background: #10B981; }
+    .eyebrow-text {
+      font-size: 10px; letter-spacing: 0.45em; text-transform: uppercase;
+      color: #10B981; font-family: 'Courier New', monospace;
+    }
+
+    /* Giant split title */
+    .title-row-1 {
+      font-size: 156px; font-weight: 100;
+      color: #F0EDE6; line-height: 0.88;
+      letter-spacing: -0.05em;
+      overflow: hidden;
+    }
+    .title-row-2 {
+      font-size: 156px; font-weight: 100;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(200,169,110,0.7);
+      line-height: 0.88; letter-spacing: -0.05em;
+      font-style: italic;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .descriptor-grid {
+      display: flex; gap: 0; margin-bottom: 40px;
+    }
+    .desc-item {
+      flex: 1; padding: 14px 0; border-left: 1px solid rgba(16,185,129,0.15);
+      padding-left: 16px;
+    }
+    .desc-label {
+      font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(200,169,110,0.5); font-family: 'Courier New', monospace;
+      margin-bottom: 6px;
+    }
+    .desc-value {
+      font-size: 13px; color: rgba(240,237,230,0.7); font-weight: 400;
+    }
+
+    .rule { height: 1px; background: rgba(16,185,129,0.18); margin-bottom: 28px; }
+
+    .stats-row { display: flex; gap: 0; }
+    .stat {
+      flex: 1; padding: 0 0 0 0; display: flex; flex-direction: column; gap: 5px;
+      border-left: 1px solid rgba(16,185,129,0.1); padding-left: 24px;
+    }
+    .stat:first-child { border-left: none; padding-left: 0; }
+    .stat-num {
+      font-size: 40px; font-weight: 200;
+      color: #F0EDE6; letter-spacing: -0.03em;
+    }
+    .stat-num em { color: #10B981; font-style: normal; }
+    .stat-label {
+      font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(240,237,230,0.28); font-family: 'Courier New', monospace;
+    }
+
+    /* ── RIGHT PANEL: NEURAL GRAPH VISUAL ── */
+    .ai-visual {
+      position: absolute; right: 80px; top: 50%;
+      transform: translateY(-50%);
+      width: 760px; height: 760px;
+    }
+
+    /* Node Graph */
+    .neural-container {
+      position: absolute;
+      width: 540px; height: 480px;
+      left: 50%; top: 40%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Terminal logs box */
+    .terminal-card {
+      position: absolute;
+      width: 500px;
+      left: 50%; bottom: 20px;
+      transform: translateX(-50%);
+      background: rgba(8, 8, 8, 0.95);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 8px;
+      padding: 16px 20px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+    .terminal-header {
+      font-family: 'JetBrains Mono', monospace; font-size: 9px;
+      color: rgba(200, 169, 110, 0.5); margin-bottom: 8px;
+      letter-spacing: 0.15em;
+    }
+    .terminal-line {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      line-height: 1.5; color: rgba(240, 237, 230, 0.45);
+      margin-bottom: 4px; overflow: hidden; white-space: nowrap;
+    }
+
+    /* Floating outcome cards */
+    .floating-card {
+      position: absolute;
+      background: rgba(13, 13, 13, 0.92);
+      border: 1px solid rgba(200, 169, 110, 0.2);
+      border-radius: 10px; padding: 16px 20px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+    .badge-label {
+      font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(200, 169, 110, 0.45); font-family: 'Courier New', monospace;
+      margin-bottom: 6px;
+    }
+    .badge-val {
+      font-size: 22px; font-weight: 800; color: #C8A96E;
+      letter-spacing: -0.02em;
+    }
+    .badge-sub {
+      font-size: 10px; letter-spacing: 0.1em;
+      color: rgba(240, 237, 230, 0.3); font-family: 'Courier New', monospace;
+      margin-top: 4px;
+    }
+
+    /* Scan line effect */
+    .scanline {
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, transparent, rgba(16,185,129,0.12), transparent);
+      pointer-events: none;
+    }
+
+    /* Slide counter */
+    .slide-counter {
+      position: absolute; bottom: 52px; right: 52px;
+      font-family: 'Courier New', monospace;
+      font-size: 10px; color: rgba(240,237,230,0.18);
+      letter-spacing: 0.25em;
+    }
+  
+    /* ── PURE ANIMATION-ONLY OVERRIDES (NO TEXTS OR TITLES) ── */
+    .panel-left, .status-bar, .v-rule, .h-rule, .ghost-B, .ghost-W, .ghost-S, .ghost-A, .ghost-M, .counter, .ghost-text, .ghost-letter, .slide-counter {
+      display: none !important;
+    }
+    .panel-right {
+      width: 100% !important;
+      left: 0 !important;
+      background: #050505 !important;
+      border: none !important;
+    }
+    .brand-visual, .canvas-container, .browser-frame, .network-container, .workbench, .ecommerce-container, .product-showcase {
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      margin: 0 !important;
+    }
+</style>
+</head>
+<body>
+  <div
+    id="ai-root"
+    data-composition-id="ai-root"
+    data-start="0"
+    data-duration="10"
+    data-width="1920"
+    data-height="1080"
+  >
+    <!-- Noise texture -->
+    <div class="noise"></div>
+
+    <!-- Split panels -->
+    <div class="panel-left" id="panelLeft"></div>
+    <div class="panel-right" id="panelRight"></div>
+
+    <!-- Ambient glows -->
+    <div class="glow-green" id="glowGreen"></div>
+    <div class="glow-gold" id="glowGold"></div>
+    <div class="glow-right" id="glowRight"></div>
+
+    <!-- Grid -->
+    <div class="grid"></div>
+
+    <!-- Structural lines -->
+    <div class="v-rule v-rule-1" id="vRule1"></div>
+    <div class="v-rule v-rule-2" id="vRule2"></div>
+    <div class="h-rule h-rule-top" id="hRuleTop"></div>
+    <div class="h-rule h-rule-bottom" id="hRuleBottom"></div>
+
+    <!-- Ghost letter -->
+    <div class="ghost-AI" id="ghostAI">AI</div>
+
+    <!-- Scan line -->
+    <div class="scanline" id="scanline"></div>
+
+    <!-- Status bar -->
+    <div class="status-bar" id="statusBar">
+      <div class="status-dot" id="statusDot"></div>
+      <span class="status-label">Autonomous Agent Core · Active</span>
+    </div>
+
+    <!-- ── LEFT CONTENT ── -->
+    <div class="content">
+      <div class="eyebrow" id="eyebrowEl">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-text">The Design Flow · 04</span>
+      </div>
+
+      <div class="title-row-1" id="titleRow1">AI</div>
+      <div class="title-row-2" id="titleRow2">Systems</div>
+
+      <div class="descriptor-grid" id="descGrid">
+        <div class="desc-item">
+          <div class="desc-label">Discipline</div>
+          <div class="desc-value">Autonomous Agent</div>
+        </div>
+        <div class="desc-item">
+          <div class="desc-label">Approach</div>
+          <div class="desc-value">n8n Engine</div>
+        </div>
+        <div class="desc-item">
+          <div class="desc-label">Output</div>
+          <div class="desc-value">Zero Labor Cost</div>
+        </div>
+      </div>
+
+      <div class="rule" id="ruleEl"></div>
+
+      <div class="stats-row" id="statsRow">
+        <div class="stat">
+          <span class="stat-num">100<em>x</em></span>
+          <span class="stat-label">Process Speed</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">24/7</span>
+          <span class="stat-label">System Uptime</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">0</span>
+          <span class="stat-label">Human Interv.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT PANEL: NEURAL VISUAL ── -->
+    <div class="ai-visual" id="aiVisual">
+
+      <!-- Neural Network Container -->
+      <div class="neural-container">
+        <svg id="neuralSvg" width="100%" height="100%" viewBox="0 0 540 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Connection lines -->
+          <line id="conn-1" x1="60" y1="90" x2="200" y2="70" stroke="rgba(16,185,129,0.25)" stroke-width="1.5"/>
+          <line id="conn-2" x1="60" y1="90" x2="200" y2="170" stroke="rgba(16,185,129,0.25)" stroke-width="1.5"/>
+          <line id="conn-3" x1="60" y1="210" x2="200" y2="70" stroke="rgba(16,185,129,0.15)" stroke-width="1"/>
+          <line id="conn-4" x1="60" y1="210" x2="200" y2="170" stroke="rgba(16,185,129,0.25)" stroke-width="1.5"/>
+          <line id="conn-5" x1="60" y1="210" x2="200" y2="270" stroke="rgba(16,185,129,0.25)" stroke-width="1.5"/>
+          <line id="conn-6" x1="60" y1="310" x2="200" y2="170" stroke="rgba(16,185,129,0.15)" stroke-width="1"/>
+          <line id="conn-7" x1="60" y1="310" x2="200" y2="270" stroke="rgba(16,185,129,0.25)" stroke-width="1.5"/>
+
+          <line id="conn-8" x1="200" y1="70" x2="340" y2="120" stroke="rgba(16,185,129,0.25)" stroke-width="1.5"/>
+          <line id="conn-9" x1="200" y1="170" x2="340" y2="120" stroke="rgba(16,185,129,0.25)" stroke-width="1.5"/>
+          <line id="conn-10" x1="200" y1="170" x2="340" y2="240" stroke="rgba(16,185,129,0.25)" stroke-width="1.5"/>
+          <line id="conn-11" x1="200" y1="270" x2="340" y2="240" stroke="rgba(16,185,129,0.25)" stroke-width="1.5"/>
+
+          <line id="conn-12" x1="340" y1="120" x2="470" y2="180" stroke="rgba(200,169,110,0.5)" stroke-width="2"/>
+          <line id="conn-13" x1="340" y1="240" x2="470" y2="180" stroke="rgba(200,169,110,0.5)" stroke-width="2"/>
+
+          <!-- Nodes input -->
+          <circle id="node-i1" cx="60" cy="90" r="14" fill="#0D0D0D" stroke="#10B981" stroke-width="1.5"/>
+          <circle cx="60" cy="90" r="8" fill="rgba(16,185,129,0.2)"/>
+          <circle cx="60" cy="90" r="4" fill="#10B981"/>
+
+          <circle id="node-i2" cx="60" cy="210" r="14" fill="#0D0D0D" stroke="#10B981" stroke-width="1.5"/>
+          <circle cx="60" cy="210" r="8" fill="rgba(16,185,129,0.2)"/>
+          <circle cx="60" cy="210" r="4" fill="#10B981"/>
+
+          <circle id="node-i3" cx="60" cy="310" r="14" fill="#0D0D0D" stroke="#10B981" stroke-width="1.5"/>
+          <circle cx="60" cy="310" r="8" fill="rgba(16,185,129,0.2)"/>
+          <circle cx="60" cy="310" r="4" fill="#10B981"/>
+
+          <!-- Hidden nodes -->
+          <circle id="node-h1" cx="200" cy="70" r="16" fill="#0D0D0D" stroke="#10B981" stroke-width="1.5"/>
+          <circle cx="200" cy="70" r="10" fill="rgba(16,185,129,0.15)"/>
+          <circle cx="200" cy="70" r="5" fill="#10B981"/>
+
+          <circle id="node-h2" cx="200" cy="170" r="16" fill="#0D0D0D" stroke="#10B981" stroke-width="2"/>
+          <circle cx="200" cy="170" r="11" fill="rgba(16,185,129,0.2)"/>
+          <circle cx="200" cy="170" r="5" fill="#10B981"/>
+
+          <circle id="node-h3" cx="200" cy="270" r="16" fill="#0D0D0D" stroke="#10B981" stroke-width="1.5"/>
+          <circle cx="200" cy="270" r="10" fill="rgba(16,185,129,0.15)"/>
+          <circle cx="200" cy="270" r="5" fill="#10B981"/>
+
+          <!-- Hidden nodes L2 -->
+          <circle id="node-h4" cx="340" cy="120" r="18" fill="#0D0D0D" stroke="#10B981" stroke-width="2"/>
+          <circle cx="340" cy="120" r="11" fill="rgba(16,185,129,0.2)"/>
+          <circle cx="340" cy="120" r="6" fill="#10B981"/>
+
+          <circle id="node-h5" cx="340" cy="240" r="18" fill="#0D0D0D" stroke="#10B981" stroke-width="2"/>
+          <circle cx="340" cy="240" r="11" fill="rgba(16,185,129,0.2)"/>
+          <circle cx="340" cy="240" r="6" fill="#10B981"/>
+
+          <!-- Output Node -->
+          <circle id="node-out" cx="470" cy="180" r="22" fill="#0D0D0D" stroke="#C8A96E" stroke-width="2"/>
+          <circle cx="470" cy="180" r="14" fill="rgba(200,169,110,0.15)"/>
+          <circle cx="470" cy="180" r="7" fill="#C8A96E"/>
+
+          <!-- Orbit ring on output -->
+          <circle id="node-out-ring" cx="470" cy="180" r="28" fill="none" stroke="rgba(200,169,110,0.2)" stroke-width="1"/>
+
+          <!-- SVG Particles -->
+          <circle id="particle1" r="3.5" fill="#10B981" opacity="0.8"/>
+          <circle id="particle2" r="3" fill="#10B981" opacity="0.6"/>
+          <circle id="particle3" r="4" fill="#C8A96E" opacity="0.9"/>
+        </svg>
+      </div>
+
+      <!-- Thinking Agent Terminal Mockup -->
+      <div class="terminal-card" id="terminalCard">
+        <div class="terminal-header">cognitive.agent_core_logs</div>
+        <div class="terminal-line" id="line1">> INITIALIZING INTELLIGENT WORKFLOW...</div>
+        <div class="terminal-line" id="line2">> INGESTING DATABASE CORE VARIABLES...</div>
+        <div class="terminal-line" id="line3">> CONNECTING API ENDPOINTS & SCHEMAS...</div>
+        <div class="terminal-line" id="line4" style="color: #10B981;">> SYSTEM STABLE: 100% AUTONOMOUS ACTIVE</div>
+      </div>
+
+      <!-- Floating Status Badge -->
+      <div class="floating-card" id="floatCard1" style="left: -120px; top: 20px; min-width: 220px;">
+        <div class="badge-label">Agent Load</div>
+        <div class="badge-val" style="color: #10B981;">1,284 / hr</div>
+        <div class="badge-sub">Autonomous Processing Tasks</div>
+      </div>
+
+      <!-- Floating Saved Cost Badge -->
+      <div class="floating-card" id="floatCard2" style="left: -90px; bottom: 120px; min-width: 240px; border-color: rgba(16, 185, 129, 0.2);">
+        <div class="badge-label" style="color: #10B981;">Cost Reduction</div>
+        <div class="badge-val" style="color: #C8A96E; font-size: 20px;">$48,200 / mo</div>
+        <div class="badge-sub">Simulated Human Labor Saved</div>
+      </div>
+    </div>
+
+    <div class="slide-counter">04 / 06</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      /* ── INITIAL STATES ── */
+      gsap.set("#panelLeft", { opacity: 0 });
+      gsap.set("#panelRight", { opacity: 0 });
+      gsap.set("#glowGreen", { opacity: 0, scale: 0.6 });
+      gsap.set("#glowGold", { opacity: 0 });
+      gsap.set("#glowRight", { opacity: 0, scale: 0.6 });
+      gsap.set("#vRule1", { scaleY: 0 });
+      gsap.set("#vRule2", { scaleY: 0 });
+      gsap.set("#hRuleTop", { scaleX: 0, transformOrigin: "left" });
+      gsap.set("#hRuleBottom", { scaleX: 0, transformOrigin: "right" });
+      gsap.set("#ghostAI", { opacity: 0, x: -60 });
+      gsap.set("#scanline", { top: -4, opacity: 0 });
+      gsap.set("#statusBar", { opacity: 0, y: -20 });
+
+      // Left panel content
+      gsap.set("#eyebrowEl", { opacity: 0, x: -30 });
+      gsap.set("#titleRow1", { opacity: 0, y: 80, skewY: 3 });
+      gsap.set("#titleRow2", { opacity: 0, y: 80, skewY: 3 });
+      gsap.set("#descGrid", { opacity: 0, y: 24 });
+      gsap.set("#ruleEl", { scaleX: 0, transformOrigin: "left" });
+      gsap.set("#statsRow", { opacity: 0, y: 20 });
+
+      // Right panel neural graph and terminal
+      gsap.set("#aiVisual", { opacity: 0 });
+      gsap.set("#neuralSvg", { opacity: 0, scale: 0.85, transformOrigin: "center center" });
+      gsap.set("#node-i1,#node-i2,#node-i3", { scale: 0, transformOrigin: "center center" });
+      gsap.set("#node-h1,#node-h2,#node-h3,#node-h4,#node-h5", { scale: 0, transformOrigin: "center center" });
+      gsap.set("#node-out,#node-out-ring", { scale: 0, transformOrigin: "470px 180px" });
+      gsap.set('[id^="conn-"]', { opacity: 0 });
+      gsap.set("#particle1", { x: 60, y: 90, opacity: 0 });
+      gsap.set("#particle2", { x: 200, y: 170, opacity: 0 });
+      gsap.set("#particle3", { x: 340, y: 120, opacity: 0 });
+
+      gsap.set("#terminalCard", { opacity: 0, y: 30 });
+      gsap.set(["#line1", "#line2", "#line3", "#line4"], { opacity: 0, x: -10 });
+
+      gsap.set("#floatCard1", { opacity: 0, y: -20, x: -10 });
+      gsap.set("#floatCard2", { opacity: 0, y: 20 });
+
+      /* ── BUILD PHASE (0–3.5s) ── */
+
+      // Background panels
+      tl.fromTo("#panelLeft", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "none" }, 0.1);
+      tl.fromTo("#panelRight", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "none" }, 0.1);
+
+      // Radial glows
+      tl.fromTo("#glowGreen", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 2.0, ease: "power3.out" }, 0.2);
+      tl.fromTo("#glowGold", { opacity: 0 }, { opacity: 1, duration: 1.8, ease: "power2.out" }, 0.4);
+      tl.fromTo("#glowRight", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 2.0, ease: "power3.out" }, 0.3);
+
+      // Structural layout rules
+      tl.fromTo("#vRule1", { scaleY: 0 }, { scaleY: 1, duration: 1.2, ease: "expo.out" }, 0.2);
+      tl.fromTo("#vRule2", { scaleY: 0 }, { scaleY: 1, duration: 1.0, ease: "expo.out" }, 0.4);
+      tl.fromTo("#hRuleTop", { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: "expo.out" }, 0.35);
+      tl.fromTo("#hRuleBottom", { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: "expo.out" }, 0.5);
+
+      // Ghost AI
+      tl.fromTo("#ghostAI", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 1.6, ease: "expo.out" }, 0.3);
+
+      // Top Status Bar
+      tl.fromTo("#statusBar", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.5);
+
+      // Scanline sweeps down once
+      tl.fromTo("#scanline", { opacity: 0, top: -4 }, { opacity: 1, duration: 0.2, ease: "none" }, 0.6);
+      tl.to("#scanline", { top: 1084, duration: 1.4, ease: "power1.inOut" }, 0.8);
+      tl.to("#scanline", { opacity: 0, duration: 0.2, ease: "none" }, 2.1);
+
+      // Left panel content: eyebrow
+      tl.fromTo("#eyebrowEl", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" }, 0.7);
+
+      // Main Title (skew reveal)
+      tl.fromTo("#titleRow1", { opacity: 0, y: 80, skewY: 3 }, { opacity: 1, y: 0, skewY: 0, duration: 1.0, ease: "power4.out" }, 1.0);
+      tl.fromTo("#titleRow2", { opacity: 0, y: 80, skewY: 3 }, { opacity: 1, y: 0, skewY: 0, duration: 1.0, ease: "power4.out" }, 1.18);
+
+      // Descriptors
+      tl.fromTo("#descGrid", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 1.9);
+
+      // Division Rule + Stats
+      tl.fromTo("#ruleEl", { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: "expo.out" }, 2.3);
+      tl.fromTo("#statsRow", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 2.7);
+
+      // Right panel neural visual reveal
+      tl.fromTo("#aiVisual", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, 0.6);
+      tl.fromTo("#neuralSvg", { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 1.2, ease: "expo.out" }, 0.8);
+
+      // Connections reveal staggered
+      tl.fromTo('[id^="conn-"]', { opacity: 0 }, { opacity: 1, duration: 0.6, stagger: 0.04, ease: "power2.out" }, 1.0);
+
+      // Nodes pop in
+      tl.fromTo("#node-i1,#node-i2,#node-i3", { scale: 0 }, { scale: 1, duration: 0.5, stagger: 0.1, ease: "back.out(1.5)" }, 1.1);
+      tl.fromTo("#node-h1,#node-h2,#node-h3", { scale: 0 }, { scale: 1, duration: 0.5, stagger: 0.08, ease: "back.out(1.5)" }, 1.3);
+      tl.fromTo("#node-h4,#node-h5", { scale: 0 }, { scale: 1, duration: 0.5, stagger: 0.1, ease: "back.out(1.5)" }, 1.5);
+      tl.fromTo("#node-out,#node-out-ring", { scale: 0 }, { scale: 1, duration: 0.6, ease: "back.out(2)" }, 1.75);
+
+      // Terminal Box reveal
+      tl.fromTo("#terminalCard", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 1.5);
+      // Typewriter-stagger logs
+      tl.fromTo("#line1", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.3, ease: "power1.out" }, 1.8);
+      tl.fromTo("#line2", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.3, ease: "power1.out" }, 2.0);
+      tl.fromTo("#line3", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.3, ease: "power1.out" }, 2.2);
+      tl.fromTo("#line4", { opacity: 0, x: -10 }, { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }, 2.5);
+
+      // SVG Data flow particles
+      tl.fromTo("#particle1", { opacity: 0 }, { opacity: 0.8, duration: 0.4, ease: "power2.out" }, 1.8);
+      tl.fromTo("#particle2", { opacity: 0 }, { opacity: 0.6, duration: 0.4, ease: "power2.out" }, 2.0);
+      tl.fromTo("#particle3", { opacity: 0 }, { opacity: 0.9, duration: 0.4, ease: "power2.out" }, 2.2);
+
+      // Floating outcomes cards
+      tl.fromTo("#floatCard1", { opacity: 0, y: -20, x: -10 }, { opacity: 1, y: 0, x: 0, duration: 0.8, ease: "power3.out" }, 2.2);
+      tl.fromTo("#floatCard2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 2.4);
+
+      /* ── BREATHE PHASE (3.5s–12s) ── */
+      const cycleDur = 4.0;
+      const repeats = Math.ceil(10 / cycleDur);
+
+      // Ghost AI slow drift
+      tl.fromTo("#ghostAI", { x: 0 }, { x: -20, duration: cycleDur, ease: "sine.inOut", yoyo: true, repeat: repeats }, 3.5);
+
+      // Neural SVG subtle float
+      tl.to("#neuralSvg", { y: -8, duration: cycleDur * 0.9, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / (cycleDur * 0.9 * 2)) }, 3.6);
+
+      // Glow breathing
+      tl.to("#glowGreen", { scale: 1.12, opacity: 0.75, duration: cycleDur, ease: "sine.inOut", yoyo: true, repeat: repeats }, 3.5);
+      tl.to("#glowRight", { scale: 1.15, opacity: 0.8, duration: cycleDur * 0.8, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / (cycleDur * 0.8)) }, 3.8);
+
+      // Nodes scale breathing (yoyo)
+      tl.fromTo("#node-h2", { scale: 1 }, { scale: 1.15, duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / 2.4), transformOrigin: "200px 170px" }, 3.5);
+      tl.fromTo("#node-h4", { scale: 1 }, { scale: 1.15, duration: 1.4, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / 2.8), transformOrigin: "340px 120px" }, 3.5);
+      tl.fromTo("#node-out", { scale: 1 }, { scale: 1.12, duration: 1.0, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / 2.0), transformOrigin: "470px 180px" }, 3.5);
+      tl.fromTo("#node-out-ring", { scale: 1, opacity: 0.2 }, { scale: 1.35, opacity: 0, duration: 1.2, ease: "sine.out", repeat: Math.ceil(10 / 1.2), transformOrigin: "470px 180px" }, 3.5);
+
+      // Particle 1 pipeline data path: i1 -> h2
+      tl.fromTo("#particle1", { x: 60, y: 90 }, { x: 200, y: 170, duration: 1.1, ease: "power1.inOut", yoyo: true, repeat: Math.ceil(10 / 1.1) }, 3.5);
+      // Particle 2: h2 -> h4
+      tl.fromTo("#particle2", { x: 200, y: 170 }, { x: 340, y: 120, duration: 1.2, ease: "power1.inOut", yoyo: true, repeat: Math.ceil(10 / 1.2) }, 3.5);
+      // Particle 3: h4 -> out
+      tl.fromTo("#particle3", { x: 340, y: 120 }, { x: 470, y: 180, duration: 0.95, ease: "power2.inOut", yoyo: true, repeat: Math.ceil(10 / 0.95) }, 3.5);
+
+      // Floating cards gentle float
+      tl.fromTo("#floatCard1", { y: 0 }, { y: 12, duration: cycleDur * 0.9, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / (cycleDur * 0.9)) }, 3.5);
+      tl.fromTo("#floatCard2", { y: 0 }, { y: -8, duration: cycleDur * 0.8, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / (cycleDur * 0.8)) }, 3.5);
+
+      // Status dot pulsing
+      tl.to("#statusDot", { opacity: 0.25, duration: 0.7, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / 1.4) }, 3.5);
+
+      window.__timelines["ai-root"] = tl;
+    </script>
+  </div>
+</body>
+</html>

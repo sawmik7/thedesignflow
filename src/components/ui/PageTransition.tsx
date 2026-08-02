@@ -1,37 +1,57 @@
-'use client';
 
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from "motion/react";
+import { useLocation } from "react-router-dom";
+import { ReactNode } from "react";
 
-export function PageTransition({ children }: { children: React.ReactNode }) {
-    const pathname = usePathname();
+const contentVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number], delay: 0.2 },
+    transitionEnd: { transform: "none" }
+  },
+  exit: {
+    opacity: 0,
+    y: -20,
+    transition: { duration: 0.3 },
+  },
+};
 
-    return (
-        <AnimatePresence mode="wait">
-            <motion.div key={pathname} className="relative">
-                {/* Page Content */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
-                >
-                    {children}
-                </motion.div>
+const overlayVariants = {
+  initial: { y: "0%" }, // Starts fully covering
+  animate: { 
+    y: "-100%", 
+    transition: { duration: 0.6, ease: [0.76, 0, 0.24, 1] as [number, number, number, number] } 
+  },
+  exit: { 
+    y: "0%", 
+    transition: { duration: 0.6, ease: [0.76, 0, 0.24, 1] as [number, number, number, number] } 
+  }
+};
 
-                {/* Transition Overlay */}
-                <motion.div
-                    className="fixed inset-0 z-[100] bg-[#FF0036] pointer-events-none"
-                    initial={{ y: "100%" }}
-                    animate={{ y: "-100%" }}
-                    exit={{ y: "0%" }}
-                    transition={{ 
-                        duration: 0.6, 
-                        ease: [0.76, 0, 0.24, 1],
-                    }}
-                />
-            </motion.div>
-        </AnimatePresence>
-    );
+export default function PageTransition({ children }: { children: ReactNode }) {
+  const { pathname } = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <div key={pathname}>
+        <motion.div
+          className="fixed inset-0 z-[100] bg-accent pointer-events-none"
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          variants={overlayVariants}
+        />
+        <motion.div
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          variants={contentVariants}
+        >
+          {children}
+        </motion.div>
+      </div>
+    </AnimatePresence>
+  );
 }

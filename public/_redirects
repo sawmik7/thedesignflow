@@ -1,0 +1,3 @@
+# Netlify SPA Fallback — serves index.html for all routes
+# This prevents 404s on direct navigation to /work/slug, /blog/slug, etc.
+/*    /index.html   200

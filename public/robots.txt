@@ -1,0 +1,49 @@
+# robots.txt — thedesignflow.website
+# Updated: 2026-06-16
+
+# ═══════════════════════════════════════════════
+# Standard Web Crawlers
+# ═══════════════════════════════════════════════
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /.env
+Disallow: /node_modules/
+
+# ═══════════════════════════════════════════════
+# AI Crawlers — explicitly allowed for AEO/GEO
+# These power Perplexity, ChatGPT, Claude, Gemini
+# ═══════════════════════════════════════════════
+
+# OpenAI / ChatGPT Browse
+User-agent: GPTBot
+Allow: /
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+
+# Anthropic Claude
+User-agent: anthropic-ai
+Allow: /
+
+# Google Gemini / Bard
+User-agent: Google-Extended
+Allow: /
+
+# Common Crawl (used by many AI training datasets)
+User-agent: CCBot
+Allow: /
+
+# Meta AI
+User-agent: FacebookBot
+Allow: /
+
+# Apple
+User-agent: Applebot
+Allow: /
+
+# ═══════════════════════════════════════════════
+# Host & Sitemap
+# ═══════════════════════════════════════════════
+Sitemap: https://thedesignflow.website/sitemap.xml

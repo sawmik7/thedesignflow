@@ -1,13 +1,23 @@
 export class TextScramble {
-  private chars = '!<>-_\\/[]{}—=+*^?#ABCDEF0123456789零一二三四五六七八九';
-  private queue: Array<{from:string; to:string; start:number; end:number; char?:string}> = [];
-  private frame = 0;
-  private resolve!: () => void;
   public el: HTMLElement;
-  private frameRequest: number = 0;
+  private chars: string;
+  private queue: Array<{
+    from: string;
+    to: string;
+    start: number;
+    end: number;
+    char?: string;
+  }>;
+  private frame: number;
+  private frameRequest: number;
+  private resolve!: () => void;
 
-  constructor(el: HTMLElement) { 
-    this.el = el; 
+  constructor(el: HTMLElement) {
+    this.el = el;
+    this.chars = '!<>-_\\/[]{}—=+*^?#ABCDEF0123456789';
+    this.queue = [];
+    this.frame = 0;
+    this.frameRequest = 0;
   }
 
   setText(newText: string): Promise<void> {
@@ -15,6 +25,7 @@ export class TextScramble {
     const length = Math.max(oldText.length, newText.length);
     const promise = new Promise<void>((resolve) => (this.resolve = resolve));
     this.queue = [];
+
     for (let i = 0; i < length; i++) {
       const from = oldText[i] || '';
       const to = newText[i] || '';
@@ -22,17 +33,20 @@ export class TextScramble {
       const end = start + Math.floor(Math.random() * 40);
       this.queue.push({ from, to, start, end });
     }
+
     cancelAnimationFrame(this.frameRequest);
     this.frame = 0;
     this.update();
     return promise;
   }
 
-  private update() {
+  update() {
     let output = '';
     let complete = 0;
+
     for (let i = 0, n = this.queue.length; i < n; i++) {
       let { from, to, start, end, char } = this.queue[i];
+
       if (this.frame >= end) {
         complete++;
         output += to;
@@ -46,16 +60,18 @@ export class TextScramble {
         output += from;
       }
     }
+
     this.el.innerHTML = output;
+
     if (complete === this.queue.length) {
       this.resolve();
     } else {
-      this.frameRequest = requestAnimationFrame(() => this.update());
+      this.frameRequest = requestAnimationFrame(this.update.bind(this));
       this.frame++;
     }
   }
 
-  private randomChar() {
+  randomChar() {
     return this.chars[Math.floor(Math.random() * this.chars.length)];
   }
 }

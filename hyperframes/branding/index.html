@@ -1,0 +1,675 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #050505; overflow: hidden; }
+
+    #branding-root {
+      width: 1920px; height: 1080px;
+      position: relative; overflow: hidden;
+      background: #050505;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    /* ── NOISE TEXTURE OVERLAY ── */
+    .noise {
+      position: absolute; inset: 0; pointer-events: none; z-index: 100;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    /* ── SPLIT PANEL ── */
+    .panel-left {
+      position: absolute; left: 0; top: 0;
+      width: 960px; height: 1080px;
+      background: #050505;
+    }
+    .panel-right {
+      position: absolute; right: 0; top: 0;
+      width: 960px; height: 1080px;
+      background: #080808;
+      border-left: 1px solid rgba(200,169,110,0.08);
+    }
+
+    /* ── AMBIENT GLOWS ── */
+    .glow-gold {
+      position: absolute;
+      width: 1100px; height: 1100px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(200,169,110,0.07) 0%, transparent 65%);
+      top: 50%; left: 30%; transform: translate(-50%,-50%);
+      pointer-events: none;
+    }
+    .glow-orange {
+      position: absolute;
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(255,77,0,0.06) 0%, transparent 65%);
+      top: 15%; right: 5%;
+      pointer-events: none;
+    }
+    .glow-right {
+      position: absolute;
+      width: 800px; height: 800px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(200,169,110,0.06) 0%, transparent 65%);
+      top: 50%; right: 80px; transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    /* ── GRID ── */
+    .grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(200,169,110,0.018) 0px, rgba(200,169,110,0.018) 1px, transparent 1px, transparent 96px),
+        repeating-linear-gradient(90deg, rgba(200,169,110,0.018) 0px, rgba(200,169,110,0.018) 1px, transparent 1px, transparent 96px);
+    }
+
+    /* ── VERTICAL RULE ── */
+    .v-rule {
+      position: absolute; width: 1px; top: 0; bottom: 0;
+      background: linear-gradient(to bottom, transparent 0%, rgba(200,169,110,0.5) 30%, rgba(200,169,110,0.5) 70%, transparent 100%);
+      transform-origin: top;
+    }
+    .v-rule-1 { left: 100px; }
+    .v-rule-2 { left: 960px; opacity: 0.15; }
+
+    /* ── HORIZONTAL RULES ── */
+    .h-rule {
+      position: absolute; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(200,169,110,0.15) 20%, rgba(200,169,110,0.15) 80%, transparent);
+    }
+    .h-rule-top { top: 160px; }
+    .h-rule-bottom { bottom: 160px; }
+
+    /* ── GHOST LETTER ── */
+    .ghost-B {
+      position: absolute;
+      font-size: 800px; font-weight: 900;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(200,169,110,0.04);
+      letter-spacing: -0.06em;
+      left: -60px; top: -80px;
+      line-height: 1; pointer-events: none; user-select: none;
+    }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      position: absolute; left: 160px; top: 80px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .status-dot { width: 7px; height: 7px; background: #FF4D00; border-radius: 50%; }
+    .status-label {
+      font-size: 10px; letter-spacing: 0.38em; text-transform: uppercase;
+      color: rgba(200,169,110,0.55); font-family: 'Courier New', monospace;
+    }
+
+    /* ── MAIN CONTENT (LEFT) ── */
+    .content {
+      position: absolute; left: 160px; top: 50%;
+      transform: translateY(-50%); width: 700px;
+    }
+
+    .eyebrow {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 36px;
+    }
+    .eyebrow-line { width: 56px; height: 1px; background: #C8A96E; }
+    .eyebrow-text {
+      font-size: 10px; letter-spacing: 0.45em; text-transform: uppercase;
+      color: #C8A96E; font-family: 'Courier New', monospace;
+    }
+
+    /* Giant split title */
+    .title-row-1 {
+      font-size: 156px; font-weight: 100;
+      color: #F0EDE6; line-height: 0.88;
+      letter-spacing: -0.05em;
+      overflow: hidden;
+    }
+    .title-row-2 {
+      font-size: 156px; font-weight: 100;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(200,169,110,0.7);
+      line-height: 0.88; letter-spacing: -0.05em;
+      font-style: italic;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .descriptor-grid {
+      display: flex; gap: 0; margin-bottom: 40px;
+    }
+    .desc-item {
+      flex: 1; padding: 14px 0; border-left: 1px solid rgba(200,169,110,0.15);
+      padding-left: 16px;
+    }
+    .desc-label {
+      font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(200,169,110,0.5); font-family: 'Courier New', monospace;
+      margin-bottom: 6px;
+    }
+    .desc-value {
+      font-size: 13px; color: rgba(240,237,230,0.7); font-weight: 400;
+    }
+
+    .rule { height: 1px; background: rgba(200,169,110,0.18); margin-bottom: 28px; }
+
+    .stats-row { display: flex; gap: 0; }
+    .stat {
+      flex: 1; padding: 0 0 0 0; display: flex; flex-direction: column; gap: 5px;
+      border-left: 1px solid rgba(200,169,110,0.1); padding-left: 24px;
+    }
+    .stat:first-child { border-left: none; padding-left: 0; }
+    .stat-num {
+      font-size: 40px; font-weight: 200;
+      color: #F0EDE6; letter-spacing: -0.03em;
+    }
+    .stat-num em { color: #C8A96E; font-style: normal; }
+    .stat-label {
+      font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(240,237,230,0.28); font-family: 'Courier New', monospace;
+    }
+
+    /* ── RIGHT PANEL: BRAND CONSTRUCTION VISUAL ── */
+    .brand-visual {
+      position: absolute; right: 80px; top: 50%;
+      transform: translateY(-50%);
+      width: 760px; height: 760px;
+    }
+
+    /* Brand mark - sophisticated logo construction */
+    .mark-container {
+      position: absolute;
+      width: 500px; height: 500px;
+      left: 50%; top: 50%; transform: translate(-50%, -50%);
+    }
+
+    /* Color palette strip - vertical */
+    .palette-strip {
+      position: absolute; right: 0; top: 50%;
+      transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .palette-chip {
+      width: 32px; border-radius: 4px;
+      position: relative; overflow: hidden;
+    }
+    .palette-chip::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%);
+    }
+
+    /* Type specimen cards */
+    .type-card {
+      position: absolute;
+      background: rgba(13,13,13,0.85);
+      border: 1px solid rgba(200,169,110,0.12);
+      border-radius: 8px; padding: 16px 20px;
+      backdrop-filter: blur(8px);
+    }
+    .type-card-label {
+      font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(200,169,110,0.45); font-family: 'Courier New', monospace;
+      margin-bottom: 6px;
+    }
+    .type-card-sample {
+      font-size: 52px; font-weight: 700; line-height: 1;
+      color: rgba(240,237,230,0.15); letter-spacing: -0.03em;
+    }
+    .type-card-name {
+      font-size: 10px; letter-spacing: 0.25em;
+      color: rgba(240,237,230,0.3); font-family: 'Courier New', monospace;
+      margin-top: 6px;
+    }
+
+    /* Logo reveal stages floating card */
+    .process-card {
+      position: absolute;
+      background: rgba(8,8,8,0.9);
+      border: 1px solid rgba(200,169,110,0.15);
+      border-radius: 10px; padding: 20px 24px;
+    }
+    .process-step {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+    }
+    .process-step:last-child { margin-bottom: 0; }
+    .step-num {
+      font-size: 10px; font-family: 'Courier New', monospace;
+      color: rgba(200,169,110,0.5); letter-spacing: 0.15em; min-width: 20px;
+    }
+    .step-bar { flex: 1; height: 2px; background: rgba(240,237,230,0.06); border-radius: 1px; overflow: hidden; }
+    .step-fill { height: 100%; border-radius: 1px; background: #C8A96E; }
+    .step-name { font-size: 11px; color: rgba(240,237,230,0.4); letter-spacing: 0.05em; min-width: 90px; text-align: right; }
+
+    /* Floating metric badge */
+    .metric-badge {
+      position: absolute;
+      background: rgba(255,77,0,0.1);
+      border: 1px solid rgba(255,77,0,0.25);
+      border-radius: 100px; padding: 8px 18px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .metric-icon { font-size: 14px; }
+    .metric-text {
+      font-size: 12px; font-weight: 600; color: #FF4D00;
+      letter-spacing: 0.05em; font-family: 'Courier New', monospace;
+    }
+
+    /* Slide counter */
+    .slide-counter {
+      position: absolute; bottom: 52px; right: 52px;
+      font-family: 'Courier New', monospace;
+      font-size: 10px; color: rgba(240,237,230,0.18);
+      letter-spacing: 0.25em;
+    }
+
+    /* Scan line effect */
+    .scanline {
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, transparent, rgba(200,169,110,0.12), transparent);
+      pointer-events: none;
+    }
+  
+    /* ── PURE ANIMATION-ONLY OVERRIDES (NO TEXTS OR TITLES) ── */
+    .panel-left, .status-bar, .v-rule, .h-rule, .ghost-B, .ghost-W, .ghost-S, .ghost-A, .ghost-M, .counter, .ghost-text, .ghost-letter, .slide-counter {
+      display: none !important;
+    }
+    .panel-right {
+      width: 100% !important;
+      left: 0 !important;
+      background: #050505 !important;
+      border: none !important;
+    }
+    .brand-visual, .canvas-container, .browser-frame, .network-container, .workbench, .ecommerce-container, .product-showcase {
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      margin: 0 !important;
+    }
+</style>
+</head>
+<body>
+  <div
+    id="branding-root"
+    data-composition-id="branding-root"
+    data-start="0"
+    data-duration="10"
+    data-width="1920"
+    data-height="1080"
+  >
+    <!-- Noise texture -->
+    <div class="noise"></div>
+
+    <!-- Split panels -->
+    <div class="panel-left" id="panelLeft"></div>
+    <div class="panel-right" id="panelRight"></div>
+
+    <!-- Ambient glows -->
+    <div class="glow-gold" id="glowGold"></div>
+    <div class="glow-orange" id="glowOrange"></div>
+    <div class="glow-right" id="glowRight"></div>
+
+    <!-- Grid -->
+    <div class="grid"></div>
+
+    <!-- Structural lines -->
+    <div class="v-rule v-rule-1" id="vRule1"></div>
+    <div class="v-rule v-rule-2" id="vRule2"></div>
+    <div class="h-rule h-rule-top" id="hRuleTop"></div>
+    <div class="h-rule h-rule-bottom" id="hRuleBottom"></div>
+
+    <!-- Ghost letter -->
+    <div class="ghost-B" id="ghostB">B</div>
+
+    <!-- Scan line -->
+    <div class="scanline" id="scanline"></div>
+
+    <!-- Status bar -->
+    <div class="status-bar" id="statusBar">
+      <div class="status-dot" id="statusDot"></div>
+      <span class="status-label">Visual Identity System · Active</span>
+    </div>
+
+    <!-- ── LEFT CONTENT ── -->
+    <div class="content">
+      <div class="eyebrow" id="eyebrowEl">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-text">The Design Flow · 01</span>
+      </div>
+
+      <div class="title-row-1" id="titleRow1">Brand</div>
+      <div class="title-row-2" id="titleRow2">Identity</div>
+
+      <div class="descriptor-grid" id="descGrid">
+        <div class="desc-item">
+          <div class="desc-label">Discipline</div>
+          <div class="desc-value">Logo Systems</div>
+        </div>
+        <div class="desc-item">
+          <div class="desc-label">Approach</div>
+          <div class="desc-value">Typography</div>
+        </div>
+        <div class="desc-item">
+          <div class="desc-label">Output</div>
+          <div class="desc-value">Color Arch.</div>
+        </div>
+      </div>
+
+      <div class="rule" id="ruleEl"></div>
+
+      <div class="stats-row" id="statsRow">
+        <div class="stat">
+          <span class="stat-num">48<em>h</em></span>
+          <span class="stat-label">Turnaround</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">100<em>%</em></span>
+          <span class="stat-label">Bespoke</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">∞</span>
+          <span class="stat-label">Revisions</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT PANEL: BRAND VISUAL ── -->
+    <div class="brand-visual" id="brandVisual">
+
+      <!-- SVG logo construction - complex geometric mark -->
+      <svg id="logoSvg"
+        style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:480px;height:480px;"
+        viewBox="0 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+        <!-- Outer orbit ring -->
+        <circle id="svgRing1" cx="240" cy="240" r="220"
+          stroke="rgba(200,169,110,0.12)" stroke-width="1"
+          stroke-dasharray="6 10"/>
+        <!-- Second ring -->
+        <circle id="svgRing2" cx="240" cy="240" r="180"
+          stroke="rgba(200,169,110,0.08)" stroke-width="0.5"
+          stroke-dasharray="4 14"/>
+        <!-- Inner ring -->
+        <circle id="svgRing3" cx="240" cy="240" r="130"
+          stroke="rgba(200,169,110,0.2)" stroke-width="1"/>
+
+        <!-- Cross hairs -->
+        <line id="svgCrossH" x1="60" y1="240" x2="420" y2="240"
+          stroke="rgba(200,169,110,0.12)" stroke-width="0.5"/>
+        <line id="svgCrossV" x1="240" y1="60" x2="240" y2="420"
+          stroke="rgba(200,169,110,0.12)" stroke-width="0.5"/>
+
+        <!-- Diagonal 45° lines -->
+        <line id="svgDiag1" x1="88" y1="88" x2="392" y2="392"
+          stroke="rgba(200,169,110,0.07)" stroke-width="0.5"/>
+        <line id="svgDiag2" x1="392" y1="88" x2="88" y2="392"
+          stroke="rgba(200,169,110,0.07)" stroke-width="0.5"/>
+
+        <!-- Logo mark: angular geometric 'D' / letterform -->
+        <!-- Outer construction path -->
+        <path id="svgPath1"
+          d="M 160 130 L 240 100 L 320 130 L 340 240 L 320 350 L 240 380 L 160 350 L 140 240 Z"
+          stroke="#C8A96E" stroke-width="1.5" fill="none" opacity="0.6"
+          stroke-dasharray="800" stroke-dashoffset="800"/>
+
+        <!-- Inner secondary form -->
+        <path id="svgPath2"
+          d="M 180 160 L 240 140 L 300 160 L 315 240 L 300 320 L 240 340 L 180 320 L 165 240 Z"
+          stroke="rgba(200,169,110,0.4)" stroke-width="1" fill="none"
+          stroke-dasharray="600" stroke-dashoffset="600"/>
+
+        <!-- Core accent diamond -->
+        <path id="svgDiamond"
+          d="M 240 195 L 285 240 L 240 285 L 195 240 Z"
+          stroke="#C8A96E" stroke-width="1.5" fill="rgba(200,169,110,0.06)"
+          stroke-dasharray="180" stroke-dashoffset="180"/>
+
+        <!-- Center dot -->
+        <circle id="svgDot" cx="240" cy="240" r="5" fill="#C8A96E" opacity="0"/>
+
+        <!-- Orbit markers at N/S/E/W -->
+        <circle id="svgMark1" cx="240" cy="20" r="3.5" fill="rgba(200,169,110,0.5)" opacity="0"/>
+        <circle id="svgMark2" cx="460" cy="240" r="3.5" fill="rgba(200,169,110,0.5)" opacity="0"/>
+        <circle id="svgMark3" cx="240" cy="460" r="3.5" fill="rgba(200,169,110,0.5)" opacity="0"/>
+        <circle id="svgMark4" cx="20" cy="240" r="3.5" fill="rgba(200,169,110,0.5)" opacity="0"/>
+
+        <!-- Corner registration marks -->
+        <path id="svgCorner1" d="M 30 20 L 20 20 L 20 30" stroke="rgba(200,169,110,0.4)" stroke-width="1.5" fill="none" opacity="0"/>
+        <path id="svgCorner2" d="M 450 20 L 460 20 L 460 30" stroke="rgba(200,169,110,0.4)" stroke-width="1.5" fill="none" opacity="0"/>
+        <path id="svgCorner3" d="M 30 460 L 20 460 L 20 450" stroke="rgba(200,169,110,0.4)" stroke-width="1.5" fill="none" opacity="0"/>
+        <path id="svgCorner4" d="M 450 460 L 460 460 L 460 450" stroke="rgba(200,169,110,0.4)" stroke-width="1.5" fill="none" opacity="0"/>
+
+        <!-- Rotating arc highlight -->
+        <circle id="svgArcSpin" cx="240" cy="240" r="220"
+          stroke="#C8A96E" stroke-width="1.5" fill="none" opacity="0.25"
+          stroke-dasharray="60 1320"
+          stroke-linecap="round"/>
+
+        <!-- Second spinning arc (opposite) -->
+        <circle id="svgArcSpin2" cx="240" cy="240" r="130"
+          stroke="#FF4D00" stroke-width="1" fill="none" opacity="0.35"
+          stroke-dasharray="30 786"
+          stroke-linecap="round"/>
+      </svg>
+
+      <!-- Palette strip - right side -->
+      <div class="palette-strip" id="paletteStrip" style="right:-20px;">
+        <div class="palette-chip" style="height:80px;background:#050505;border:1px solid rgba(200,169,110,0.25);" id="chip1"></div>
+        <div class="palette-chip" style="height:80px;background:#C8A96E;" id="chip2"></div>
+        <div class="palette-chip" style="height:50px;background:#FF4D00;" id="chip3"></div>
+        <div class="palette-chip" style="height:80px;background:#F0EDE6;" id="chip4"></div>
+        <div class="palette-chip" style="height:50px;background:#0D0D0D;border:1px solid rgba(200,169,110,0.2);" id="chip5"></div>
+      </div>
+
+      <!-- Type specimen card - upper left of visual -->
+      <div class="type-card" id="typeCard"
+        style="left:-100px;top:40px;min-width:200px;">
+        <div class="type-card-label">Type System</div>
+        <div class="type-card-sample">Aa</div>
+        <div class="type-card-name">Plus Jakarta Sans</div>
+      </div>
+
+      <!-- Process card - lower area -->
+      <div class="process-card" id="processCard"
+        style="left:-80px;bottom:40px;min-width:320px;">
+        <div class="process-step">
+          <span class="step-num">01</span>
+          <div class="step-bar"><div class="step-fill" id="fill1" style="width:100%"></div></div>
+          <span class="step-name">Research</span>
+        </div>
+        <div class="process-step">
+          <span class="step-num">02</span>
+          <div class="step-bar"><div class="step-fill" id="fill2" style="width:85%"></div></div>
+          <span class="step-name">Identity</span>
+        </div>
+        <div class="process-step">
+          <span class="step-num">03</span>
+          <div class="step-bar"><div class="step-fill" id="fill3" style="width:72%"></div></div>
+          <span class="step-name">Systems</span>
+        </div>
+        <div class="process-step">
+          <span class="step-num">04</span>
+          <div class="step-bar"><div class="step-fill" id="fill4" style="width:90%"></div></div>
+          <span class="step-name">Delivery</span>
+        </div>
+      </div>
+
+      <!-- Metric badge -->
+      <div class="metric-badge" id="metricBadge"
+        style="top:20px;right:60px;">
+        <span class="metric-icon">↑</span>
+        <span class="metric-text">3.4× Brand Recall</span>
+      </div>
+
+    </div>
+
+    <div class="slide-counter">01 / 06</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      /* ── INITIAL STATES ── */
+      gsap.set("#panelLeft", { opacity: 0 });
+      gsap.set("#panelRight", { opacity: 0 });
+      gsap.set("#glowGold", { opacity: 0, scale: 0.6 });
+      gsap.set("#glowOrange", { opacity: 0 });
+      gsap.set("#glowRight", { opacity: 0, scale: 0.6 });
+      gsap.set("#vRule1", { scaleY: 0 });
+      gsap.set("#vRule2", { scaleY: 0 });
+      gsap.set("#hRuleTop", { scaleX: 0, transformOrigin: "left" });
+      gsap.set("#hRuleBottom", { scaleX: 0, transformOrigin: "right" });
+      gsap.set("#ghostB", { opacity: 0, x: -60 });
+      gsap.set("#scanline", { top: -4, opacity: 0 });
+      gsap.set("#statusBar", { opacity: 0, y: -20 });
+
+      // Content
+      gsap.set("#eyebrowEl", { opacity: 0, x: -30 });
+      gsap.set("#titleRow1", { opacity: 0, y: 80, skewY: 3 });
+      gsap.set("#titleRow2", { opacity: 0, y: 80, skewY: 3 });
+      gsap.set("#descGrid", { opacity: 0, y: 24 });
+      gsap.set("#ruleEl", { scaleX: 0, transformOrigin: "left" });
+      gsap.set("#statsRow", { opacity: 0, y: 20 });
+
+      // Right panel
+      gsap.set("#logoSvg", { opacity: 0, scale: 0.85, rotation: -8 });
+      gsap.set("#svgPath1", { strokeDashoffset: 800 });
+      gsap.set("#svgPath2", { strokeDashoffset: 600 });
+      gsap.set("#svgDiamond", { strokeDashoffset: 180 });
+      gsap.set("#svgDot", { opacity: 0, scale: 0 });
+      gsap.set(["#svgMark1","#svgMark2","#svgMark3","#svgMark4"], { opacity: 0 });
+      gsap.set(["#svgCorner1","#svgCorner2","#svgCorner3","#svgCorner4"], { opacity: 0 });
+      gsap.set("#svgArcSpin", { rotation: 0, transformOrigin: "240px 240px" });
+      gsap.set("#svgArcSpin2", { rotation: 0, transformOrigin: "240px 240px" });
+      gsap.set("#svgRing1", { opacity: 0, scale: 1.2, transformOrigin: "240px 240px" });
+      gsap.set("#svgRing2", { opacity: 0, scale: 1.3, transformOrigin: "240px 240px" });
+      gsap.set("#svgRing3", { opacity: 0, scale: 1.15, transformOrigin: "240px 240px" });
+      gsap.set(["#svgCrossH","#svgCrossV","#svgDiag1","#svgDiag2"], { opacity: 0 });
+      gsap.set("#paletteStrip", { opacity: 0, x: 40 });
+      gsap.set(["#chip1","#chip2","#chip3","#chip4","#chip5"], { scaleY: 0, transformOrigin: "top" });
+      gsap.set("#typeCard", { opacity: 0, y: -20, x: -10 });
+      gsap.set("#processCard", { opacity: 0, y: 20 });
+      gsap.set(["#fill1","#fill2","#fill3","#fill4"], { scaleX: 0, transformOrigin: "left" });
+      gsap.set("#metricBadge", { opacity: 0, y: -16 });
+      gsap.set("#brandVisual", { opacity: 0 });
+
+      /* ── BUILD PHASE (0–3.5s) ── */
+
+      // Panels fade in instantly
+      tl.fromTo("#panelLeft", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "none" }, 0.1);
+      tl.fromTo("#panelRight", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "none" }, 0.1);
+
+      // Glows emerge
+      tl.fromTo("#glowGold", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 2.0, ease: "power3.out" }, 0.2);
+      tl.fromTo("#glowOrange", { opacity: 0 }, { opacity: 1, duration: 1.8, ease: "power2.out" }, 0.4);
+      tl.fromTo("#glowRight", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 2.0, ease: "power3.out" }, 0.3);
+
+      // Structural lines draw
+      tl.fromTo("#vRule1", { scaleY: 0 }, { scaleY: 1, duration: 1.2, ease: "expo.out" }, 0.2);
+      tl.fromTo("#vRule2", { scaleY: 0 }, { scaleY: 1, duration: 1.0, ease: "expo.out" }, 0.4);
+      tl.fromTo("#hRuleTop", { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: "expo.out" }, 0.35);
+      tl.fromTo("#hRuleBottom", { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: "expo.out" }, 0.5);
+
+      // Ghost B drifts in
+      tl.fromTo("#ghostB", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 1.6, ease: "expo.out" }, 0.3);
+
+      // Status bar
+      tl.fromTo("#statusBar", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.5);
+
+      // Scanline sweeps down once
+      tl.fromTo("#scanline", { opacity: 0, top: -4 }, { opacity: 1, duration: 0.2, ease: "none" }, 0.6);
+      tl.to("#scanline", { top: 1084, duration: 1.4, ease: "power1.inOut" }, 0.8);
+      tl.to("#scanline", { opacity: 0, duration: 0.2, ease: "none" }, 2.1);
+
+      // Content: eyebrow
+      tl.fromTo("#eyebrowEl", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" }, 0.7);
+
+      // Title rows - staggered with skew
+      tl.fromTo("#titleRow1", { opacity: 0, y: 80, skewY: 3 }, { opacity: 1, y: 0, skewY: 0, duration: 1.0, ease: "power4.out" }, 1.0);
+      tl.fromTo("#titleRow2", { opacity: 0, y: 80, skewY: 3 }, { opacity: 1, y: 0, skewY: 0, duration: 1.0, ease: "power4.out" }, 1.18);
+
+      // Descriptor grid
+      tl.fromTo("#descGrid", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 1.9);
+
+      // Rule + stats
+      tl.fromTo("#ruleEl", { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: "expo.out" }, 2.3);
+      tl.fromTo("#statsRow", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 2.7);
+
+      // Brand visual reveal
+      tl.fromTo("#brandVisual", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, 0.6);
+      tl.fromTo("#logoSvg", { opacity: 0, scale: 0.85, rotation: -8 }, { opacity: 1, scale: 1, rotation: 0, duration: 1.4, ease: "expo.out" }, 0.8);
+
+      // SVG rings collapse in
+      tl.fromTo("#svgRing1", { opacity: 0, scale: 1.2 }, { opacity: 1, scale: 1, duration: 1.2, ease: "expo.out" }, 0.9);
+      tl.fromTo("#svgRing2", { opacity: 0, scale: 1.3 }, { opacity: 1, scale: 1, duration: 1.3, ease: "expo.out" }, 1.0);
+      tl.fromTo("#svgRing3", { opacity: 0, scale: 1.15 }, { opacity: 1, scale: 1, duration: 1.0, ease: "expo.out" }, 1.1);
+
+      // Cross hairs
+      tl.fromTo(["#svgCrossH","#svgCrossV"], { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out", stagger: 0.12 }, 1.2);
+      tl.fromTo(["#svgDiag1","#svgDiag2"], { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out", stagger: 0.1 }, 1.4);
+
+      // Logo paths draw sequentially
+      tl.fromTo("#svgPath1", { strokeDashoffset: 800 }, { strokeDashoffset: 0, duration: 1.6, ease: "power2.out" }, 1.3);
+      tl.fromTo("#svgPath2", { strokeDashoffset: 600 }, { strokeDashoffset: 0, duration: 1.2, ease: "power2.out" }, 1.7);
+      tl.fromTo("#svgDiamond", { strokeDashoffset: 180 }, { strokeDashoffset: 0, duration: 0.8, ease: "expo.out" }, 2.2);
+
+      // Center dot pops
+      tl.fromTo("#svgDot", { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(3)" }, 2.6);
+
+      // Orbit markers pop
+      tl.fromTo(["#svgMark1","#svgMark2","#svgMark3","#svgMark4"], { opacity: 0, scale: 0 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)", stagger: 0.08 }, 2.2);
+
+      // Corner registration marks
+      tl.fromTo(["#svgCorner1","#svgCorner2","#svgCorner3","#svgCorner4"], { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out", stagger: 0.05 }, 1.8);
+
+      // Palette strip reveals from top
+      tl.fromTo("#paletteStrip", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" }, 1.5);
+      tl.fromTo(["#chip1","#chip2","#chip3","#chip4","#chip5"], { scaleY: 0 }, { scaleY: 1, duration: 0.6, ease: "expo.out", stagger: 0.08 }, 1.7);
+
+      // Floating cards
+      tl.fromTo("#typeCard", { opacity: 0, y: -20, x: -10 }, { opacity: 1, y: 0, x: 0, duration: 0.8, ease: "power3.out" }, 1.9);
+      tl.fromTo("#processCard", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 2.1);
+
+      // Process bar fills stagger in
+      tl.fromTo(["#fill1","#fill2","#fill3","#fill4"], { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "expo.out", stagger: 0.1 }, 2.4);
+
+      // Metric badge
+      tl.fromTo("#metricBadge", { opacity: 0, y: -16 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 2.5);
+
+      /* ── BREATHE PHASE (3.5s–12s): Continuous ambient loops ── */
+      const cycleDur = 4.0;
+      const repeats = Math.ceil(10 / cycleDur);
+
+      // Outer arc spins continuously
+      tl.to("#svgArcSpin", { rotation: 360, duration: 12, ease: "none", repeat: 1 }, 3.5);
+      tl.to("#svgArcSpin2", { rotation: -360, duration: 8, ease: "none", repeat: 1 }, 3.5);
+
+      // Ring 1 slow rotation (dashes appear to animate)
+      tl.to("#svgRing1", { rotation: 20, duration: 14, ease: "none", transformOrigin: "240px 240px", repeat: 0 }, 3.5);
+
+      // Ghost B slow drift
+      tl.fromTo("#ghostB", { x: 0 }, { x: -20, duration: cycleDur, ease: "sine.inOut", yoyo: true, repeat: repeats }, 3.5);
+
+      // Glow breathing
+      tl.to("#glowGold", { scale: 1.12, opacity: 0.75, duration: cycleDur, ease: "sine.inOut", yoyo: true, repeat: repeats }, 3.5);
+      tl.to("#glowRight", { scale: 1.15, opacity: 0.8, duration: cycleDur * 0.8, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / (cycleDur * 0.8)) }, 3.8);
+
+      // Brand visual subtle float
+      tl.to("#logoSvg", { y: -12, duration: cycleDur * 0.9, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / (cycleDur * 0.9 * 2)) }, 3.6);
+
+      // Status dot pulse
+      tl.to("#statusDot", { opacity: 0.25, duration: 0.7, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / 1.4) }, 3.5);
+
+      // Metric badge shimmer
+      tl.to("#metricBadge", { opacity: 0.6, duration: 1.5, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / 3) }, 4.5);
+
+      // Orbit markers gentle scale pulse
+      tl.to(["#svgMark1","#svgMark3"], { scale: 1.6, opacity: 0.8, duration: 2.0, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / 4), stagger: 1.0 }, 4.0);
+      tl.to(["#svgMark2","#svgMark4"], { scale: 1.6, opacity: 0.8, duration: 2.0, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / 4), stagger: 1.0 }, 5.0);
+
+      window.__timelines["branding-root"] = tl;
+    </script>
+  </div>
+</body>
+</html>

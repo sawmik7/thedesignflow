@@ -1,0 +1,204 @@
+ight:#24292E;--shiki-dark:#E1E4E8"> {
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const layersRef = useRef<HTMLDivElement[]>([]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Mouse Parallax Logic
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (window.innerWidth / 2 - e.pageX) / 25;
+      const y = (window.innerHeight / 2 - e.pageY) / 25;
+
+      // Rotate the 3D Canvas
+      canvas.style.transform = `rotateX(${55 + y / 2}deg) rotateZ(${-25 + x / 2}deg)`;
+
+      // Apply depth shift to layers
+      layersRef.current.forEach((layer, index) => {
+        if (!layer) return;
+        const depth = (index + 1) * 15;
+        const moveX = x * (index + 1) * 0.2;
+        const moveY = y * (index + 1) * 0.2;
+        layer.style.transform = `translateZ(${depth}px) translate(${moveX}px, ${moveY}px)`;
+      });
+    };
+
+    // Entrance Animation
+    canvas.style.opacity = '0';
+    canvas.style.transform = 'rotateX(90deg) rotateZ(0deg) scale(0.8)';
+    
+    const timeout = setTimeout(() => {
+      canvas.style.transition = 'all 2.5s cubic-bezier(0.16, 1, 0.3, 1)';
+      canvas.style.opacity = '1';
+      canvas.style.transform = 'rotateX(55deg) rotateZ(-25deg) scale(1)';
+    }, 300);
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      clearTimeout(timeout);
+    };
+  }, []);
+
+  return (
+    <>
+      <style>{`
+        :root {
+          --bg: #0a0a0a;
+          --silver: #e0e0e0;
+          --accent: #ff3c00;
+          --grain-opacity: 0.15;
+        }
+
+        .halide-body {
+          background-color: var(--bg);
+          color: var(--silver);
+          font-family: 'Syncopate', sans-serif;
+          overflow: hidden;
+          height: 100vh;
+          width: 100vw;
+          margin: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .halide-grain {
+          position: fixed;
+          top: 0; left: 0; width: 100%; height: 100%;
+          pointer-events: none;
+          z-index: 100;
+          opacity: var(--grain-opacity);
+        }
+
+        .viewport {
+          perspective: 2000px;
+          width: 100vw; height: 100vh;
+          display: flex; align-items: center; justify-content: center;
+          overflow: hidden;
+        }
+
+        .canvas-3d {
+          position: relative;
+          width: 800px; height: 500px;
+          transform-style: preserve-3d;
+          transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .layer {
+          position: absolute;
+          inset: 0;
+          border: 1px solid rgba(224, 224, 224, 0.1);
+          background-size: cover;
+          background-position: center;
+          transition: transform 0.5s ease;
+        }
+
+        .layer-1 { background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&#x26;fit=crop&#x26;q=80&#x26;w=1200'); filter: grayscale(1) contrast(1.2) brightness(0.5); }
+        .layer-2 { background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&#x26;fit=crop&#x26;q=80&#x26;w=1200'); filter: grayscale(1) contrast(1.1) brightness(0.7); opacity: 0.6; mix-blend-mode: screen; }
+        .layer-3 { background-image: url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&#x26;fit=crop&#x26;q=80&#x26;w=1200'); filter: grayscale(1) contrast(1.3) brightness(0.8); opacity: 0.4; mix-blend-mode: overlay; }
+
+        .contours {
+          position: absolute;
+          width: 200%; height: 200%;
+          top: -50%; left: -50%;
+          background-image: repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 40px, rgba(255,255,255,0.05) 41px, transparent 42px);
+          transform: translateZ(120px);
+          pointer-events: none;
+        }
+
+        .interface-grid {
+          position: fixed;
+          inset: 0;
+          padding: 4rem;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          grid-template-rows: auto 1fr auto;
+          z-index: 10;
+          pointer-events: none;
+        }
+
+        .hero-title {
+          grid-column: 1 / -1;
+          align-self: center;
+          font-size: clamp(3rem, 10vw, 10rem);
+          line-height: 0.85;
+          letter-spacing: -0.04em;
+          mix-blend-mode: difference;
+        }
+
+        .cta-button {
+          pointer-events: auto;
+          background: var(--silver);
+          color: var(--bg);
+          padding: 1rem 2rem;
+          text-decoration: none;
+          font-weight: 700;
+          clip-path: polygon(0 0, 100% 0, 100% 70%, 85% 100%, 0 100%);
+          transition: 0.3s;
+        }
+
+        .cta-button:hover { background: var(--accent); transform: translateY(-5px); }
+
+        .scroll-hint {
+          position: absolute;
+          bottom: 2rem; left: 50%;
+          width: 1px; height: 60px;
+          background: linear-gradient(to bottom, var(--silver), transparent);
+          animation: flow 2s infinite ease-in-out;
+        }
+
+        @keyframes flow {
+          0%, 100% { transform: scaleY(0); transform-origin: top; }
+          50% { transform: scaleY(1); transform-origin: top; }
+          51% { transform: scaleY(1); transform-origin: bottom; }
+        }
+      `}</style>
+
+      <div className="halide-body">
+        {/* SVG Filter for Grain */}
+        <svg style={{ position: 'absolute', width: 0, height: 0 }}>
+          <filter id="grain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" />
+            <feColorMatrix type="saturate" values="0" />
+          </filter>
+        </svg>
+
+        <div className="halide-grain" style={{ filter: 'url(#grain)' }}></div>
+
+        <div className="interface-grid">
+          <div style={{ fontWeight: 700 }}>HALIDE_CORE</div>
+          <div style={{ textAlign: 'right', fontFamily: 'monospace', color: 'var(--accent)', fontSize: '0.7rem' }}>
+            <div>LATITUDE: 34.0522° N</div>
+            <div>FOCAL DEPTH: 80MM</div>
+          </div>
+
+          <h1 className="hero-title">SILVER<br />SULPHIDE</h1>
+
+          <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+            <div style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>
+              <p>[ ARCHIVE 2024 ]</p>
+              <p>SURFACE TENSION &#x26; TOPOGRAPHICAL LIGHT</p>
+            </div>
+            <a href="#" className="cta-button">EXPLORE DEPTH</a>
+          </div>
+        </div>
+
+        <div className="viewport">
+          <div className="canvas-3d" ref={canvasRef}>
+            <div className="layer layer-1" ref={(el) => (layersRef.current[0] = el!)}></div>
+            <div className="layer layer-2" ref={(el) => (layersRef.current[1] = el!)}></div>
+            <div className="layer layer-3" ref={(el) => (layersRef.current[2] = el!)}></div>
+            <div className="contours"></div>
+          </div>
+        </div>
+
+        <div className="scroll-hint"></div>
+      </div>
+    </>
+  );
+};
+
+export default HalideLanding;Created 2/4/2026Updated 2/4/2026$RC("B:2","S:2")(self.__next_f=self.__next_f||[]).push([0])self.__next_f.push([1,"1:\"$Sreact.fragment\"\n"])self.__next_f.push([1,"3:I[19771,[\"79323\",\"static/chunks/0206212e-87dacf40ffdde3f4.js\",\"26885\",\"static/chunks/3dbc7fab-ddbe4a9ecc46a20d.js\",\"67608\",\"static/chunks/2d2d3c67-534fff7c09ab1dc6.js\",\"80498\",\"static/chunks/8a20a44a-e9fafbd51fba4fb9.js\",\"29346\",\"static/chunks/fcea31f8-3dba28c14a2e7fc3.js\",\"51539\",\"static/chunks/c510f067-f269cc3bc69584eb.js\",\"546\",\"static/chunks/c15208c6-06beb165a35ff174.js\",\"59381\",\"static/chunks/2c423691-50d896c2efee64c7.js\",\"69674\",\"static/chunks/238edd4e-2f8984f42beec25c.js\",\"86473\",\"static/chunks/4bb1dc3e-6e70fbaaa464adf5.js\",\"57458\",\"static/chunks/57458-db7605dbdfe8ac93.js\",\"64323\",\"static/chunks/64323-bb5d7e7724fb0e30.js\",\"83262\",\"static/chunks/83262-360322397a519fb0.js\",\"24037\",\"static/chunks/24037-09d5fba18cfdd89a.js\",\"79718\",\"static/chunks/79718-de80bf93786839ea.js\",\"66120\",\"static/chunks/66120-46cf7e66e97c83bf.js\",\"2056\",\"static/chunks/2056-ed5dd8a35f8889c2.js\",\"62179\",\"static/chunks/62179-8fffd78856c08532.js\",\"59075\",\"static/chunks/59075-792adab5cc6546f0.js\",\"63091\",\"static/chunks/63091-ebca387bcb206998.js\",\"73744\",\"static/chunks/73744-5cc8c3e043e145a5.js\",\"95614\",\"static/chunks/95614-0aa85650ca9f8634.js\",\"76177\",\"static/chunks/76177-8027be10251ff2e1.js\",\"76037\",\"static/chunks/76037-995c7f531edeed2e.js\",\"25220\",\"static/chunks/25220-6699349931280130.js\",\"97245\",\"static/chunks/97245-866d1f5496c073f0.js\",\"10176\",\"static/chunks/10176-440a61b00f6ae5e9.js\",\"71315\",\"static/chunks/71315-7530e54e991bd215.js\",\"8407\",\"static/chunks/8407-906cf9c0c09f5e36.js\",\"75597\",\"static/chunks/75597-9ea992daddc04aa8.js\",\"43961\",\"static/chunks/43961-6d521ea389b632d2.js\",\"52532\",\"static/chunks/52532-97a7187b08647ba3.js\",\"9835\",\"static/chunks/9835-a6cdf94cc71cc3e0.js\",\"16671\",\"static/chunks/16671-4317b86d1f033457.js\",\"63134\",\"static/chunks/63134-7017ce89fa2409f4.js\",\"64047\",\"static/chunks/64047-13517a269fcc4b27.js\",\"24899\",\"static/chunks/24899-142bcd5e3f7f4d9d.js\",\"21043\",\"static/chunks/21043-8baf55f65647046e.js\",\"9834\",\"static/chunks/9834-304222057199f317.js\",\"61215\",\"static/chunks/61215-569be07280f62bc2.js\",\"77518\",\"static/chunks/77518-8014c1356241ed79.js\",\"62207\",\"static/chunks/62207-72c62dd1afe3b2ed.js\",\"36112\",\"static/chunks/36112-98556221bd044705.js\",\"49370\",\"static/chunks/49370-29a9ec38e766a463.js\",\"32699\",\"static/chunks/32699-6125c08eb3eb0be5.js\",\"82583\",\"static/chunks/82583-863d557f3a892697.js\",\"18715\",\"static/chunks/18715-c5121f04cbeae3b4.js\",\"28047\",\"static/chunks/28047-955986538bab97c2.js\",\"20261\",\"static/chunks/20261-02472ce52416a33f.js\",\"246\",\"static/chunks/app/(news)/layout-a39b8af708f57974.js\"],\"SiteAppProviders\",1]\n"])self.__next_f.push([1,"4:I[96241,[\"79323\",\"static/chunks/0206212e-87dacf40ffdde3f4.js\",\"26885\",\"static/chunks/3dbc7fab-ddbe4a9ecc46a20d.js\",\"67608\",\"static/chunks/2d2d3c67-534fff7c09ab1dc6.js\",\"80498\",\"static/chunks/8a20a44a-e9fafbd51fba4fb9.js\",\"29346\",\"static/chunks/fcea31f8-3dba28c14a2e7fc3.js\",\"51539\",\"static/chunks/c510f067-f269cc3bc69584eb.js\",\"546\",\"static/chunks/c15208c6-06beb165a35ff174.js\",\"59381\",\"static/chunks/2c423691-50d896c2efee64c7.js\",\"69674\",\"static/chunks/238edd4e-2f8984f42beec25c.js\",\"86473\",\"static/chunks/4bb1dc3e-6e70fbaaa464adf5.js\",\"57458\",\"static/chunks/57458-db7605dbdfe8ac93.js\",\"64323\",\"static/chunks/64323-bb5d7e7724fb0e30.js\",\"83262\",\"static/chunks/83262-360322397a519fb0.js\",\"24037\",\"static/chunks/24037-09d5fba18cfdd89a.js\",\"79718\",\"static/chunks/79718-de80bf93786839ea.js\",\"66120\",\"static/chunks/66120-46cf7e66e97c83bf.js\",\"2056\",\"static/chunks/2056-ed5dd8a35f8889c2.js\",\"62179\",\"static/chunks/62179-8fffd78856c08532.js\",\"59075\",\"static/chunks/59075-792adab5cc6546f0.js\",\"63091\",\"static/chunks/63091-ebca387bcb206998.js\",\"73744\",\"static/chunks/73744-5cc8c3e043e145a5.js\",\"95614\",\"static/chunks/95614-0aa85650ca9f8634.js\",\"76177\",\"static/chunks/76177-8027be10251ff2e1.js\",\"25220\",\"static/chunks/25220-6699349931280130.js\",\"97245\",\"static/chunks/97245-866d1f5496c073f0.js\",\"10176\",\"static/chunks/10176-440a61b00f6ae5e9.js\",\"11845\",\"static/chunks/11845-140aecfa6a046c95.js\",\"85040\",\"static/chunks/85040-736a82e30ef4a493.js\",\"71315\",\"static/chunks/71315-7530e54e991bd215.js\",\"8407\",\"static/chunks/8407-906cf9c0c09f5e36.js\",\"75597\",\"static/chunks/75597-9ea992daddc04aa8.js\",\"27571\",\"static/chunks/27571-d63741c44f2403b3.js\",\"43961\",\"static/chunks/43961-6d521ea389b632d2.js\",\"52532\",\"static/chunks/52532-97a7187b08647ba3.js\",\"9835\",\"static/chunks/9835-a6cdf94cc71cc3e0.js\",\"16671\",\"static/chunks/16671-4317b86d1f033457.js\",\"63134\",\"static/chunks/63134-7017ce89fa2409f4.js\",\"64047\",\"static/chunks/64047-13517a269fcc4b27.js\",\"24899\",\"static/chunks/24899-142bcd5e3f7f4d9d.js\",\"69413\",\"static/chunks/69413-e78b5a4d493f5314.js\",\"92312\",\"static/chunks/92312-8996ed66e2f93389.js\",\"21043\",\"static/chunks/21043-8baf55f65647046e.js\",\"9834\",\"static/chunks/9834-304222057199f317.js\",\"61215\",\"static/chunks/61215-569be07280f62bc2.js\",\"4308\",\"static/chunks/4308-62f591059cc1c5f4.js\",\"77518\",\"static/chunks/77518-8014c1356241ed79.js\",\"62207\",\"static/chunks/62207-72c62dd1afe3b2ed.js\",\"11466\",\"static/chunks/11466-e83f4d1c6cc5fa3c.js\",\"53207\",\"static/chunks/53207-089619172ab0389e.js\",\"89277\",\"static/chunks/89277-3560a278aa14f706.js\",\"20371\",\"static/chunks/20371-9dbdfd1c0662aeda.js\",\"69943\",\"static/chunks/69943-01c8f8172871abb7.js\",\"3141\",\"static/chunks/3141-c19d6693800f9a3d.js\",\"49370\",\"static/chunks/49370-29a9ec38e766a463.js\",\"32699\",\"static/chunks/32699-6125c08eb3eb0be5.js\",\"82583\",\"static/chunks/82583-863d557f3a892697.js\",\"6597\",\"static/chunks/6597-b5a8728bb43b0368.js\",\"8921\",\"static/chunks/8921-15c4213e6bff1566.js\",\"71819\",\"static/chunks/71819-57d66bd53a138a9f.js\",\"49607\",\"static/chunks/49607-5810a660487b2c1f.js\",\"18715\",\"static/chunks/18715-c5121f04cbeae3b4.js\",\"28047\",\"static/chunks/28047-955986538bab97c2.js\",\"59820\",\"static/chunks/59820-ca6018eea55cb84e.js\",\"20261\",\"static/chunks/20261-02472ce52416a33f.js\",\"54643\",\"static/chunks/54643-2c95b8e1ea49dff1.js\",\"53120\",\"static/chunks/53120-7fe206ae676db29a.js\",\"73013\",\"static/chunks/73013-e6e4bc3d582790d0.js\",\"85975\",\"static/chunks/85975-4fb14fddeafdc636.js\",\"91816\",\"static/chunks/app/(public)/layout-c43b5048f8eb8b91.js\"],\"DesktopAuthProvider\"]\n"])self.__next_f.push([1,"5:I[21729,[\"79323\",\"static/chunks/0206212e-87dacf40ffdde3f4.js\",\"26885\",\"static/chunks/3dbc7fab-ddbe4a9ecc46a20d.js\",\"67608\",\"static/chunks/2d2d3c67-534fff7c09ab1dc6.js\",\"80498\",\"static/chunks/8a20a44a-e9fafbd51fba4fb9.js\",\"29346\",\"static/chunks/fcea31f8-3dba28c14a2e7fc3.js\",\"51539\",\"static/chunks/c510f067-f269cc3bc69584eb.js\",\"546\",\"static/chunks/c15208c6-06beb165a35ff174.js\",\"59381\",\"static/chunks/2c423691-50d896c2efee64c7.js\",\"69674\",\"static/chunks/238edd4e-2f8984f42beec25c.js\",\"86473\",\"static/chunks/4bb1dc3e-6e70fbaaa464adf5.js\",\"57458\",\"static/chunks/57458-db7605dbdfe8ac93.js\",\"64323\",\"static/chunks/64323-bb5d7e7724fb0e30.js\",\"83262\",\"static/chunks/83262-360322397a519fb0.js\",\"24037\",\"static/chunks/24037-09d5fba18cfdd89a.js\",\"79718\",\"static/chunks/79718-de80bf93786839ea.js\",\"66120\",\"static/chunks/66120-46cf7e66e97c83bf.js\",\"2056\",\"static/chunks/2056-ed5dd8a35f8889c2.js\",\"62179\",\"static/chunks/62179-8fffd78856c08532.js\",\"59075\",\"static/chunks/59075-792adab5cc6546f0.js\",\"63091\",\"static/chunks/63091-ebca387bcb206998.js\",\"73744\",\"static/chunks/73744-5cc8c3e043e145a5.js\",\"95614\",\"static/chunks/95614-0aa85650ca9f8634.js\",\"76177\",\"static/chunks/76177-8027be10251ff2e1.js\",\"25220\",\"static/chunks/25220-6699349931280130.js\",\"97245\",\"static/chunks/97245-866d1f5496c073f0.js\",\"10176\",\"static/chunks/10176-440a61b00f6ae5e9.js\",\"11845\",\"static/chunks/11845-140aecfa6a046c95.js\",\"85040\",\"static/chunks/85040-736a82e30ef4a493.js\",\"71315\",\"static/chunks/71315-7530e54e991bd215.js\",\"8407\",\"static/chunks/8407-906cf9c0c09f5e36.js\",\"75597\",\"static/chunks/75597-9ea992daddc04aa8.js\",\"27571\",\"static/chunks/27571-d63741c44f2403b3.js\",\"43961\",\"static/chunks/43961-6d521ea389b632d2.js\",\"52532\",\"static/chunks/52532-97a7187b08647ba3.js\",\"9835\",\"static/chunks/9835-a6cdf94cc71cc3e0.js\",\"16671\",\"static/chunks/16671-4317b86d1f033457.js\",\"63134\",\"static/chunks/63134-7017ce89fa2409f4.js\",\"64047\",\"static/chunks/64047-13517a269fcc4b27.js\",\"24899\",\"static/chunks/24899-142bcd5e3f7f4d9d.js\",\"69413\",\"static/chunks/69413-e78b5a4d493f5314.js\",\"92312\",\"static/chunks/92312-8996ed66e2f93389.js\",\"21043\",\"static/chunks/21043-8baf55f65647046e.js\",\"9834\",\"static/chunks/9834-304222057199f317.js\",\"61215\",\"static/chunks/61215-569be07280f62bc2.js\",\"4308\",\"static/chunks/4308-62f591059cc1c5f4.js\",\"77518\",\"static/chunks/77518-8014c1356241ed79.js\",\"62207\",\"static/chunks/62207-72c62dd1afe3b2ed.js\",\"11466\",\"static/chunks/11466-e83f4d1c6cc5fa3c.js\",\"53207\",\"static/chunks/53207-089619172ab0389e.js\",\"89277\",\"static/chunks/89277-3560a278aa14f706.js\",\"20371\",\"static/chunks/20371-9dbdfd1c0662aeda.js\",\"69943\",\"static/chunks/69943-01c8f8172871abb7.js\",\"3141\",\"static/chunks/3141-c19d6693800f9a3d.js\",\"49370\",\"static/chunks/49370-29a9ec38e766a463.js\",\"32699\",\"static/chunks/32699-6125c08eb3eb0be5.js\",\"82583\",\"static/chunks/82583-863d557f3a892697.js\",\"6597\",\"static/chunks/6597-b5a8728bb43b0368.js\",\"8921\",\"static/chunks/8921-15c4213e6bff1566.js\",\"71819\",\"static/chunks/71819-57d66bd53a138a9f.js\",\"49607\",\"static/chunks/49607-5810a660487b2c1f.js\",\"18715\",\"static/chunks/18715-c5121f04cbeae3b4.js\",\"28047\",\"static/chunks/28047-955986538bab97c2.js\",\"59820\",\"static/chunks/59820-ca6018eea55cb84e.js\",\"20261\",\"static/chunks/20261-02472ce52416a33f.js\",\"54643\",\"static/chunks/54643-2c95b8e1ea49dff1.js\",\"53120\",\"static/chunks/53120-7fe206ae676db29a.js\",\"73013\",\"static/chunks/73013-e6e4bc3d582790d0.js\",\"85975\",\"static/chunks/85975-4fb14fddeafdc636.js\",\"91816\",\"static/chunks/app/(public)/layout-c43b5048f8eb8b91.js\"],\"default\"]\n"])self.__next_f.push([1,"6:I[23204,[],\"\"]\n7:I[73890,[],\"\"]\n9:I[52353,[],\"OutletBoundary\"]\na:\"$Sreact.suspense\"\nc:I[81378,[\"79323\",\"static/chunks/0206212e-87dacf40ffdde3f4.js\",\"57458\",\"static/chunks/57458-db7605dbdfe8ac93.js\",\"64323\",\"static/chunks/64323-bb5d7e7724fb0e30.js\",\"83262\",\"static/chunks/83262-360322397a519fb0.js\",\"24037\",\"static/chunks/24037-09d5fba18cfdd89a.js\",\"79718\",\"static/chunks/79718-de80bf93786839ea.js\",\"66120\",\"static/chunks/66120-46cf7e66e97c83bf.js\",\"2056\",\"static/chunks/2056-ed5dd8a35f8889c2.js\",\"62179\",\"static/chunks/62179-8fffd78856c08532.js\",\"59075\",\"static/chunks/59075-792adab5cc6546f0.js\",\"63091\",\"static/chunks/63091-ebca387bcb206998.js\",\"73744\",\"static/chunks/73744-5cc8c3e043e145a5.js\",\"95614\",\"static/chunks/95614-0aa85650ca9f8634.js\",\"76177\",\"static/chunks/76177-8027be10251ff2e1.js\",\"10176\",\"static/chunks/10176-440a61b00f6ae5e9.js\",\"11845\",\"static/chunks/11845-140aecfa6a046c95.js\",\"85040\",\"static/chunks/85040-736a82e30ef4a493.js\",\"24454\",\"static/chunks/24454-492b052afa95fea0.js\",\"49370\",\"static/chunks/49370-29a9ec38e766a463.js\",\"32699\",\"static/chunks/32699-6125c08eb3eb0be5.js\",\"6597\",\"static/chunks/6597-b5a8728bb43b0368.js\",\"8921\",\"static/chunks/8921-15c4213e6bff1566.js\",\"71819\",\"static/chunks/71819-57d66bd53a138a9f.js\",\"44968\",\"static/chunks/app/(public)/community/components/%5Busername%5D/%5Bcomponent_slug%5D/%5Bdemo_slug%5D/loading-8042ee74e3b4c997.js\"],\"default\"]\nd:I[19234,[\"79323\",\"static/chunks/0206212e-87dacf40ffdde3f4.js\",\"57458\",\"static/chunks/57458-db7605dbdfe8ac93.js\",\"64323\",\"static/chunks/64323-bb5d7e7724fb0e30.js\",\"83262\",\"static/chunks/83262-360322397a519fb0.js\",\"24037\",\"static/chunks/24037-09d5fba18cfdd89a.js\",\"79718\",\"static/chunks/79718-de80bf93786839ea.js\",\"66120\",\"static/chunks/66120-46cf7e66e97c83bf.js\",\"2056\",\"static/chunks/2056-ed5dd8a35f8889c2.js\",\"62179\",\"static/chunks/62179-8fffd78856c08532.js\",\"59075\",\"static/chunks/59075-792adab5cc6546f0.js\",\"63091\",\"static/chunks/63091-ebca387bcb206998.js\",\"73744\",\"static/chunks/73744-5cc8c3e043e145a5.js\",\"95614\",\"static/chunks/95614-0aa85650ca9f8634.js\",\"76177\",\"static/chunks/76177-8027be10251ff2e1.js\",\"10176\",\"static/chunks/10176-440a61b00f6ae5e9.js\",\"11845\",\"static/chunks/11845-140aecfa6a046c95.js\",\"85040\",\"static/chunks/85040-736a82e30ef4a493.js\",\"24454\",\"static/chunks/24454-492b052afa95fea0.js\",\"49370\",\"static/chunks/49370-29a9ec38e766a463.js\",\"32699\",\"static/chunks/32699-6125c08eb3eb0be5.js\",\"6597\",\"static/chunks/6597-b5a8728bb43b0368.js\",\"8921\",\"static/chunks/8921-15c4213e6bff1566.js\",\"71819\",\"static/chunks/71819-57d66bd53a138a9f.js\",\"96952\",\"static/chunks/app/(public)/community/components/%5Busername%5D/%5Bcomponent_slug%5D/loading-240fce7018630214.js\"],\"default\"]\ne:I[63491,[\"79323\",\"static/chunks/0206212e-87dacf40ffdde3f4.js\",\"57458\",\"static/chunks/57458-db7605dbdfe8ac93.js\",\"64323\",\"static/chunks/64323-bb5d7e7724fb0e30.js\",\"83262\",\"static/chunks/83262-360322397a519fb0.js\",\"24037\",\"static/chunks/24037-09d5fba18cfdd89a.js\",\"79718\",\"static/chunks/79718-de80bf93786839ea.js\",\"66120\",\"static/chunks/66120-46cf7e66e97c83bf.js\",\"2056\",\"static/chunks/2056-ed5dd8a35f8889c2.js\",\"62179\",\"static/chunks/62179-8fffd78856c08532.js\",\"59075\",\"static/chunks/59075-792adab5cc6546f0.js\",\"63091\",\"static/chunks/63091-ebca387bcb206998.js\",\"73744\",\"static/chunks/73744-5cc8c3e043e145a5.js\",\"95614\",\"static/chunks/95614-0aa85650ca9f8634.js\",\"76177\",\"static/chunks/76177-8027be10251ff2e1.js\",\"10176\",\"static/chunks/10176-440a61b00f6ae5e9.js\",\"11845\",\"static/chunks/11845-140aecfa6a046c95.js\",\"85040\",\"static/chunks/85040-736a82e30ef4a493.js\",\"24454\",\"static/chunks/24454-492b052afa95fea0.js\",\"49370\",\"static/chunks/49370-29a9ec38e766a463.js\",\"32699\",\"static/chunks/32699-6125c08eb3eb0be5.js\",\"6597\",\"static/chunks/6597-b5a8728bb43b0368.js\",\"8921\",\"static/chunks/8921-15c4213e6bff1566.js\",\"61759\",\"static/chunks/61759-021fba6c3bc41157.js\",\"68421\",\"static/chunks/app/(public)/community/components/loading-e552776e6aac459b.js\"],\"default\"]\nf:I[52353,[],\"ViewportBoundary\"]\n11:I[52353,[],\"MetadataBoundary\"]\n13:I[1121,[\"34219\",\"static/chunks/app/global-error-ea89d1a3d5f56388.js\"],\"default\"]\n:HL"])self.__next_f.push([1,"[\"/_next/static/media/1005bd875009f524.p.woff2\",\"font\",{\"crossOrigin\":\"\",\"type\":\"font/woff2\"}]\n:HL[\"/_next/static/media/27834908180db20f-s.p.woff2\",\"font\",{\"crossOrigin\":\"\",\"type\":\"font/woff2\"}]\n:HL[\"/_next/static/media/72309d8f79298cda.p.woff2\",\"font\",{\"crossOrigin\":\"\",\"type\":\"font/woff2\"}]\n:HL[\"/_next/static/media/78fec81b34c4a365.p.woff2\",\"font\",{\"crossOrigin\":\"\",\"type\":\"font/woff2\"}]\n:HL[\"/_next/static/media/b269f2652091576b.p.woff2\",\"font\",{\"crossOrigin\":\"\",\"type\":\"font/woff2\"}]\n:HL[\"/_next/static/media/eda1bea3c0704595.p.woff2\",\"font\",{\"crossOrigin\":\"\",\"type\":\"font/woff2\"}]\n:HL[\"/_next/static/media/f361b893d795d088.p.woff2\",\"font\",{\"crossOrigin\":\"\",\"type\":\"font/woff2\"}]\n:HL[\"/_next/static/css/6d7e56fbbf71be23.css\",\"style\"]\n:HL[\"/_next/static/css/390c235be374a605.css\",\"style\"]\n:HL[\"/_next/static/css/bbb18f21d09c62dc.css\",\"style\"]\n"])self.__next_f.push([1,"0:{\"P\":null,\"b\":\"xbLvpjYHQiD4xVVyi1EOp\",\"c\":[\"\",\"community\",\"components\",\"shivendra9795kumar\",\"halide-topo-hero\",\"default\"],\"q\":\"\",\"i\":false,\"f\":[[[\"\",{\"children\":[\"(public)\",{\"children\":[\"community\",{\"children\":[\"components\",{\"children\":[[\"username\",\"shivendra9795kumar\",\"d\"],{\"children\":[[\"component_slug\",\"halide-topo-hero\",\"d\"],{\"children\":[[\"demo_slug\",\"default\",\"d\"],{\"children\":[\"__PAGE__\",{}]}]}]}]}]}]}]},\"$undefined\",\"$undefined\",true],[[\"$\",\"$1\",\"c\",{\"children\":[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/css/6d7e56fbbf71be23.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}],[\"$\",\"link\",\"1\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/css/390c235be374a605.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}]],\"$L2\"]}],{\"children\":[[\"$\",\"$1\",\"c\",{\"children\":[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/css/bbb18f21d09c62dc.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"}]],[\"$\",\"$L3\",null,{\"children\":[\"$\",\"$L4\",null,{\"isDesktopAuth\":false,\"desktopUserId\":null,\"children\":[\"$\",\"$L5\",null,{\"initialSidebarOpen\":true,\"initialSidebarWidth\":240,\"initialDismissedNews\":[],\"deferSidebarNewsUntilHydrated\":true,\"children\":[\"$\",\"$L6\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L7\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"}],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}}],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":404}],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"}]}]]}]}]],[]],\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]}]}]}]]}],{\"children\":[[\"$\",\"$1\",\"c\",{\"children\":[null,[\"$\",\"$L6\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L7\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]]}],{\"children\":[[\"$\",\"$1\",\"c\",{\"children\":[null,[\"$\",\"$L6\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L7\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]]}],{\"children\":[[\"$\",\"$1\",\"c\",{\"children\":[null,[\"$\",\"$L6\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L7\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]]}],{\"children\":[[\"$\",\"$1\",\"c\",{\"children\":[null,[\"$\",\"$L6\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L7\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]]}],{\"children\":[[\"$\",\"$1\",\"c\",{\"children\":[null,[\"$\",\"$L6\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L7\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]]}],{\"children\":[[\"$\",\"$1\",\"c\",{\"children\":[\"$L8\",null,[\"$\",\"$L9\",null,{\"children\":[\"$\",\"$a\",null,{\"name\":\"Next.MetadataOutlet\",\"children\":\"$@b\"}]}]]}],{},null,false,false]},[[\"$\",\"$Lc\",\"l\",{}],[],[]],false,false]},[[\"$\",\"$Ld\",\"l\",{}],[],[]],false,false]},null,false,false]},[[\"$\",\"$Le\",\"l\",{}],[],[]],false,false]},null,false,false]},null,false,false]},null,false,false],[\"$\",\"$1\",\"h\",{\"children\":[null,[\"$\",\"$Lf\",null,{\"children\":\"$@10\"}],[\"$\",\"div\",null,{\"hidden\":true,\"children\":[\"$\",\"$L11\",null,{\"children\":[\"$\",\"$a\",null,{\"name\":\"Next.Metadata\",\"children\":\"$@12\"}]}]}],[\"$\",\"meta\",null,{\"name\":\"next-size-adjust\",\"content\":\"\"}]]}],false]],\"m\":\"$undefined\",\"G\":[\"$13\",[]],\"S\":true}\n"])self.__next_f.push([1,"15:I[32051,[\"79323\",\"static/chunks/0206212e-87dacf40ffdde3f4.js\",\"26885\",\"static/chunks/3dbc7fab-ddbe4a9ecc46a20d.js\",\"67608\",\"static/chunks/2d2d3c67-534fff7c09ab1dc6.js\",\"80498\",\"static/chunks/8a20a44a-e9fafbd51fba4fb9.js\",\"29346\",\"static/chunks/fcea31f8-3dba28c14a2e7fc3.js\",\"51539\",\"static/chunks/c510f067-f269cc3bc69584eb.js\",\"546\",\"static/chunks/c15208c6-06beb165a35ff174.js\",\"59381\",\"static/chunks/2c423691-50d896c2efee64c7.js\",\"69674\",\"static/chunks/238edd4e-2f8984f42beec25c.js\",\"86473\",\"static/chunks/4bb1dc3e-6e70fbaaa464adf5.js\",\"57458\",\"static/chunks/57458-db7605dbdfe8ac93.js\",\"64323\",\"static/chunks/64323-bb5d7e7724fb0e30.js\",\"83262\",\"static/chunks/83262-360322397a519fb0.js\",\"24037\",\"static/chunks/24037-09d5fba18cfdd89a.js\",\"79718\",\"static/chunks/79718-de80bf93786839ea.js\",\"66120\",\"static/chunks/66120-46cf7e66e97c83bf.js\",\"2056\",\"static/chunks/2056-ed5dd8a35f8889c2.js\",\"62179\",\"static/chunks/62179-8fffd78856c08532.js\",\"59075\",\"static/chunks/59075-792adab5cc6546f0.js\",\"63091\",\"static/chunks/63091-ebca387bcb206998.js\",\"73744\",\"static/chunks/73744-5cc8c3e043e145a5.js\",\"95614\",\"static/chunks/95614-0aa85650ca9f8634.js\",\"25220\",\"static/chunks/25220-6699349931280130.js\",\"97245\",\"static/chunks/97245-866d1f5496c073f0.js\",\"10176\",\"static/chunks/10176-440a61b00f6ae5e9.js\",\"71315\",\"static/chunks/71315-7530e54e991bd215.js\",\"8407\",\"static/chunks/8407-906cf9c0c09f5e36.js\",\"75597\",\"static/chunks/75597-9ea992daddc04aa8.js\",\"43961\",\"static/chunks/43961-6d521ea389b632d2.js\",\"52532\",\"static/chunks/52532-97a7187b08647ba3.js\",\"9835\",\"static/chunks/9835-a6cdf94cc71cc3e0.js\",\"16671\",\"static/chunks/16671-4317b86d1f033457.js\",\"63134\",\"static/chunks/63134-7017ce89fa2409f4.js\",\"64047\",\"static/chunks/64047-13517a269fcc4b27.js\",\"24899\",\"static/chunks/24899-142bcd5e3f7f4d9d.js\",\"21043\",\"static/chunks/21043-8baf55f65647046e.js\",\"9834\",\"static/chunks/9834-304222057199f317.js\",\"61215\",\"static/chunks/61215-569be07280f62bc2.js\",\"77518\",\"static/chunks/77518-8014c1356241ed79.js\",\"62207\",\"static/chunks/62207-72c62dd1afe3b2ed.js\",\"98143\",\"static/chunks/98143-82a3cf848fa50bb4.js\",\"49370\",\"static/chunks/49370-29a9ec38e766a463.js\",\"32699\",\"static/chunks/32699-6125c08eb3eb0be5.js\",\"82583\",\"static/chunks/82583-863d557f3a892697.js\",\"18715\",\"static/chunks/18715-c5121f04cbeae3b4.js\",\"28047\",\"static/chunks/28047-955986538bab97c2.js\",\"20261\",\"static/chunks/20261-02472ce52416a33f.js\",\"7177\",\"static/chunks/app/layout-320e99d98ca45506.js\"],\"RootClientShell\",1]\n"])self.__next_f.push([1,"14:[\"$\",\"iframe\",null,{\"src\":\"https://www.googletagmanager.com/ns.html?id=GTM-T76WQSTW\",\"height\":\"0\",\"width\":\"0\",\"style\":{\"display\":\"none\",\"visibility\":\"hidden\"}}]\n"])self.__next_f.push([1,"2:[\"$\",\"html\",null,{\"lang\":\"en\",\"suppressHydrationWarning\":true,\"children\":[[\"$\",\"head\",null,{\"children\":[false,[\"$\",\"script\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"(function(){try{var t=localStorage.getItem('theme');if(t==='\\\"dark\\\"'||t==='dark'||((!t||t==='\\\"system\\\"'||t==='system')\u0026\u0026window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()\"}}],[\"$\",\"script\",null,{\"id\":\"google-tag-manager\",\"dangerouslySetInnerHTML\":{\"__html\":\"(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\\nnew Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\\nj=d.createElement(s),dl=l!='dataLayer'?'\u0026l='+l:'';j.async=true;j.src=\\n'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\\n})(window,document,'script','dataLayer','GTM-T76WQSTW');\"}}],[\"$\",\"script\",null,{\"async\":true,\"src\":\"https://www.googletagmanager.com/gtag/js?id=G-X7C2K3V7GX\"}],[\"$\",\"script\",null,{\"id\":\"google-analytics\",\"dangerouslySetInnerHTML\":{\"__html\":\"window.dataLayer = window.dataLayer || [];\\nfunction gtag(){window.dataLayer.push(arguments);}\\ngtag('js', new Date());\\ngtag('config', 'G-X7C2K3V7GX');\"}}]]}],[\"$\",\"body\",null,{\"suppressHydrationWarning\":true,\"className\":\"__variable_245d8d __variable_97c177 __variable_bc4999 __variable_158bdc font-sans [scrollbar-gutter:stable] antialiased\",\"children\":[[\"$\",\"noscript\",null,{\"children\":\"$14\"}],[\"$\",\"div\",null,{\"className\":\"h-full\",\"children\":[\"$\",\"$L15\",null,{\"children\":[\"$\",\"$L6\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L7\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"}],[\"$\",\"div\",null,{\"style\":\"$0:f:0:1:1:children:0:props:children:1:props:children:props:children:props:children:props:notFound:0:1:props:style\",\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}}],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":\"$0:f:0:1:1:children:0:props:children:1:props:children:props:children:props:children:props:notFound:0:1:props:children:props:children:1:props:style\",\"children\":404}],[\"$\",\"div\",null,{\"style\":\"$0:f:0:1:1:children:0:props:children:1:props:children:props:children:props:children:props:notFound:0:1:props:children:props:children:2:props:style\",\"children\":[\"$\",\"h2\",null,{\"style\":\"$0:f:0:1:1:children:0:props:children:1:props:children:props:children:props:children:props:notFound:0:1:props:children:props:children:2:props:children:props:style\",\"children\":\"This page could not be found.\"}]}]]}]}]],[]],\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\"}]}]}]]}]]}]\n"])self.__next_f.push([1,"10:[[\"$\",\"meta\",\"0\",{\"charSet\":\"utf-8\"}],[\"$\",\"meta\",\"1\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover\"}]]\n"])self.__next_f.push([1,"17:I[76580,[],\"IconMark\"]\n16:T5ff,"])self.__next_f.push([1,"UI components,React components,Tailwind components,Component library,Design blocks,UI blocks,Component marketplace,Reusable components,Code snippets,Modular UI,Build faster,Developer toolkit,Frontend boilerplate,Copy paste components,Drop-in components,Rapid prototyping,Web UI kits,Component sharing,Plug and play code,Developer productivity tools,AI UI builder,AI for developers,AI generated components,ChatGPT UI builder,Prompt to UI,Code from text,AI design to code,UI generation with AI,GPT code examples,AI for frontend devs,Design system components,UI design for developers,Figma to code,Frontend code templates,Developer-friendly design,Full-stack components,Code for product design,Low-code components,Design engineer tools,Frontend component hub,Publish code online,Monetize your components,Developer portfolio platform,Build in public,Share your code,UI component marketplace,Open source components,Developer community platform,Code marketplace,Frontend inspiration,AI agents SDK,agent infrastructure,agentic internet,AI agents,AI agent registry,AI agent directory,claude agents,claude managed agents,anthropic agents,MCP servers,model context protocol,agent configuration,lovable ai,bolt.new,replit agent,v0,v0 templates,AI code generation,Prompt-based coding,Natural language programming,AI-assisted development,Voice-driven coding,AI pair programmer,No-code AI solutions,AI coding assistant,Rapid prototyping with AI,halide topo hero component,halide topo hero shadcn/ui,shivendra9795kumar components,community components"])self.__next_f.push([1,"12:[[\"$\",\"title\",\"0\",{\"children\":\"Halide Topo Hero | Community Components - 21st | 21st\"}],[\"$\",\"meta\",\"1\",{\"name\":\"description\",\"content\":\"A monochrome 3D hero component with topographical parallax layers and film grain effects.\"}],[\"$\",\"link\",\"2\",{\"rel\":\"manifest\",\"href\":\"/manifest.webmanifest\",\"crossOrigin\":\"$undefined\"}],[\"

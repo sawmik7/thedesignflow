@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #000000;
+        font-family: sans-serif;
+      }
+      .composition-container {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        background: radial-gradient(circle at 50% 50%, #150800 0%, #000000 80%);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      /* Cinematic scanline & noise overlays */
+      .cinematic-noise {
+        position: absolute;
+        inset: 0;
+        background: url('https://grainy-gradients.vercel.app/noise.svg');
+        mix-blend-mode: overlay;
+        opacity: 0.15;
+        pointer-events: none;
+        z-index: 10;
+      }
+      .glow-orb {
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 77, 0, 0.12) 0%, transparent 70%);
+        filter: blur(50px);
+        will-change: transform;
+      }
+      /* Geometrics */
+      .geo-svg {
+        width: 900px;
+        height: 900px;
+        position: relative;
+        z-index: 5;
+      }
+      .glow-path {
+        stroke: #FF4D00;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        filter: drop-shadow(0 0 12px rgba(255, 77, 0, 0.6));
+      }
+      .glow-path-dim {
+        stroke: rgba(255, 77, 0, 0.2);
+        stroke-width: 1;
+        stroke-linecap: round;
+      }
+      .brand-title {
+        position: absolute;
+        bottom: 80px;
+        font-size: 56px;
+        font-weight: 300;
+        letter-spacing: 0.25em;
+        text-transform: uppercase;
+        color: #FFFFFF;
+        opacity: 0.85;
+        text-shadow: 0 0 20px rgba(255,255,255,0.2);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        z-index: 6;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="6"
+      data-width="1920"
+      data-height="1080"
+      class="composition-container"
+    >
+      <div class="cinematic-noise"></div>
+      <div class="glow-orb" id="orb-1" style="top: 10%; left: 15%"></div>
+      <div class="glow-orb" id="orb-2" style="bottom: 10%; right: 15%"></div>
+
+      <svg class="geo-svg" viewBox="0 0 800 800" fill="none">
+        <!-- Outer concentric rings -->
+        <circle cx="400" cy="400" r="320" class="glow-path-dim" />
+        <circle cx="400" cy="400" r="240" class="glow-path-dim" />
+        <circle cx="400" cy="400" r="160" class="glow-path" id="ring-1" stroke-dasharray="1005" stroke-dashoffset="1005" />
+
+        <!-- Rotating complex cross wireframes -->
+        <path d="M 80 400 L 720 400 M 400 80 L 400 720" class="glow-path-dim" />
+        
+        <!-- Animated orbital segments -->
+        <circle cx="400" cy="400" r="300" class="glow-path" id="ring-2" stroke-dasharray="1884" stroke-dashoffset="1884" stroke-dasharray="100, 100" />
+        
+        <!-- Central glowing core -->
+        <polygon points="400,280 504,340 504,460 400,520 296,460 296,340" class="glow-path" id="poly-1" stroke-dasharray="600" stroke-dashoffset="600" />
+        <polygon points="400,320 469,360 469,440 400,480 331,440 331,360" class="glow-path-dim" />
+        
+        <!-- Cyber nodes -->
+        <circle cx="400" cy="280" r="6" fill="#FF4D00" class="core-node" />
+        <circle cx="504" cy="340" r="6" fill="#FF4D00" class="core-node" />
+        <circle cx="504" cy="460" r="6" fill="#FF4D00" class="core-node" />
+        <circle cx="400" cy="520" r="6" fill="#FF4D00" class="core-node" />
+        <circle cx="296" cy="460" r="6" fill="#FF4D00" class="core-node" />
+        <circle cx="296" cy="340" r="6" fill="#FF4D00" class="core-node" />
+      </svg>
+
+      <div class="brand-title">Branding Identity</div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Infinite rotation elements & path writing (6s duration)
+      tl.to(".geo-svg", { rotation: 360, duration: 6, ease: "none" }, 0);
+      tl.to("#orb-1", { x: 200, y: 100, duration: 6, ease: "sine.inOut", repeat: 1, yoyo: true }, 0);
+      tl.to("#orb-2", { x: -200, y: -100, duration: 6, ease: "sine.inOut", repeat: 1, yoyo: true }, 0);
+
+      // Stroke drawing transitions
+      tl.to("#ring-1", { strokeDashoffset: 0, duration: 3, ease: "power2.out" }, 0.5);
+      tl.to("#ring-2", { strokeDashoffset: -500, duration: 6, ease: "none" }, 0);
+      tl.to("#poly-1", { strokeDashoffset: 0, duration: 3.5, ease: "power3.inOut" }, 0.8);
+      tl.from(".core-node", { scale: 0, opacity: 0, duration: 1.5, stagger: 0.1, ease: "elastic.out(1, 0.5)" }, 1.2);
+      tl.from(".brand-title", { opacity: 0, y: 30, duration: 2.0, ease: "power3.out" }, 0.2);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

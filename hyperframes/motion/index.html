@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Motion Design — The Design Flow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #050505; overflow: hidden; }
+
+    #motion-root {
+      width: 1920px; height: 1080px;
+      position: relative; overflow: hidden;
+      background: #050505;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* ── NOISE TEXTURE OVERLAY ── */
+    .noise {
+      position: absolute; inset: 0; pointer-events: none; z-index: 100;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    /* ── SPLIT PANEL ── */
+    .panel-left {
+      position: absolute; left: 0; top: 0;
+      width: 960px; height: 1080px;
+      background: #050505;
+    }
+    .panel-right {
+      position: absolute; right: 0; top: 0;
+      width: 960px; height: 1080px;
+      background: #080808;
+      border-left: 1px solid rgba(245,158,11,0.08);
+    }
+
+    /* ── AMBIENT GLOWS ── */
+    .glow-amber {
+      position: absolute;
+      width: 1100px; height: 1100px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(245,158,11,0.08) 0%, transparent 65%);
+      top: 50%; left: 35%; transform: translate(-50%,-50%);
+      pointer-events: none;
+    }
+    .glow-gold {
+      position: absolute;
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(200,169,110,0.05) 0%, transparent 65%);
+      top: 15%; right: 5%;
+      pointer-events: none;
+    }
+    .glow-right {
+      position: absolute;
+      width: 800px; height: 800px; border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(245,158,11,0.06) 0%, transparent 65%);
+      top: 50%; right: 80px; transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    /* ── GRID ── */
+    .grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(245,158,11,0.018) 0px, rgba(245,158,11,0.018) 1px, transparent 1px, transparent 96px),
+        repeating-linear-gradient(90deg, rgba(245,158,11,0.018) 0px, rgba(245,158,11,0.018) 1px, transparent 1px, transparent 96px);
+    }
+
+    /* ── VERTICAL RULE ── */
+    .v-rule {
+      position: absolute; width: 1px; top: 0; bottom: 0;
+      background: linear-gradient(to bottom, transparent 0%, rgba(245,158,11,0.3) 30%, rgba(245,158,11,0.3) 70%, transparent 100%);
+      transform-origin: top;
+    }
+    .v-rule-1 { left: 100px; }
+    .v-rule-2 { left: 960px; opacity: 0.15; }
+
+    /* ── HORIZONTAL RULES ── */
+    .h-rule {
+      position: absolute; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(245,158,11,0.15) 20%, rgba(245,158,11,0.15) 80%, transparent);
+    }
+    .h-rule-top { top: 160px; }
+    .h-rule-bottom { bottom: 160px; }
+
+    /* ── GHOST LETTER ── */
+    .ghost-M {
+      position: absolute;
+      font-size: 800px; font-weight: 900;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(245,158,11,0.04);
+      letter-spacing: -0.06em;
+      left: -40px; top: -80px;
+      line-height: 1; pointer-events: none; user-select: none;
+    }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      position: absolute; left: 160px; top: 80px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .status-dot { width: 7px; height: 7px; background: #FF4D00; border-radius: 50%; }
+    .status-label {
+      font-size: 10px; letter-spacing: 0.38em; text-transform: uppercase;
+      color: rgba(200,169,110,0.55); font-family: 'Courier New', monospace;
+    }
+
+    /* ── MAIN CONTENT (LEFT) ── */
+    .content {
+      position: absolute; left: 160px; top: 50%;
+      transform: translateY(-50%); width: 700px;
+    }
+
+    .eyebrow {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 36px;
+    }
+    .eyebrow-line { width: 56px; height: 1px; background: #F59E0B; }
+    .eyebrow-text {
+      font-size: 10px; letter-spacing: 0.45em; text-transform: uppercase;
+      color: #F59E0B; font-family: 'Courier New', monospace;
+    }
+
+    /* Giant split title */
+    .title-row-1 {
+      font-size: 156px; font-weight: 100;
+      color: #F0EDE6; line-height: 0.88;
+      letter-spacing: -0.05em;
+      overflow: hidden;
+    }
+    .title-row-2 {
+      font-size: 156px; font-weight: 100;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(200,169,110,0.7);
+      line-height: 0.88; letter-spacing: -0.05em;
+      font-style: italic;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .descriptor-grid {
+      display: flex; gap: 0; margin-bottom: 40px;
+    }
+    .desc-item {
+      flex: 1; padding: 14px 0; border-left: 1px solid rgba(245,158,11,0.15);
+      padding-left: 16px;
+    }
+    .desc-label {
+      font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(200,169,110,0.5); font-family: 'Courier New', monospace;
+      margin-bottom: 6px;
+    }
+    .desc-value {
+      font-size: 13px; color: rgba(240,237,230,0.7); font-weight: 400;
+    }
+
+    .rule { height: 1px; background: rgba(245,158,11,0.18); margin-bottom: 28px; }
+
+    .stats-row { display: flex; gap: 0; }
+    .stat {
+      flex: 1; padding: 0 0 0 0; display: flex; flex-direction: column; gap: 5px;
+      border-left: 1px solid rgba(245,158,11,0.1); padding-left: 24px;
+    }
+    .stat:first-child { border-left: none; padding-left: 0; }
+    .stat-num {
+      font-size: 40px; font-weight: 200;
+      color: #F0EDE6; letter-spacing: -0.03em;
+    }
+    .stat-num em { color: #F59E0B; font-style: normal; }
+    .stat-label {
+      font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(240,237,230,0.28); font-family: 'Courier New', monospace;
+    }
+
+    /* ── RIGHT PANEL: MOTION GRAPH VISUAL ── */
+    .motion-visual {
+      position: absolute; right: 80px; top: 50%;
+      transform: translateY(-50%);
+      width: 760px; height: 760px;
+    }
+
+    /* Easing Curve workbench mockup */
+    .curve-container {
+      position: absolute;
+      width: 620px; height: 440px;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Floating outcome cards */
+    .floating-card {
+      position: absolute;
+      background: rgba(13, 13, 13, 0.92);
+      border: 1px solid rgba(200, 169, 110, 0.2);
+      border-radius: 10px; padding: 16px 20px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+    .badge-label {
+      font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(200, 169, 110, 0.45); font-family: 'Courier New', monospace;
+      margin-bottom: 6px;
+    }
+    .badge-val {
+      font-size: 22px; font-weight: 800; color: #C8A96E;
+      letter-spacing: -0.02em;
+    }
+    .badge-sub {
+      font-size: 10px; letter-spacing: 0.1em;
+      color: rgba(240, 237, 230, 0.3); font-family: 'Courier New', monospace;
+      margin-top: 4px;
+    }
+
+    /* Scan line effect */
+    .scanline {
+      position: absolute; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, transparent, rgba(245,158,11,0.12), transparent);
+      pointer-events: none;
+    }
+
+    /* Slide counter */
+    .slide-counter {
+      position: absolute; bottom: 52px; right: 52px;
+      font-family: 'Courier New', monospace;
+      font-size: 10px; color: rgba(240,237,230,0.18);
+      letter-spacing: 0.25em;
+    }
+  
+    /* ── PURE ANIMATION-ONLY OVERRIDES (NO TEXTS OR TITLES) ── */
+    .panel-left, .status-bar, .v-rule, .h-rule, .ghost-B, .ghost-W, .ghost-S, .ghost-A, .ghost-M, .counter, .ghost-text, .ghost-letter, .slide-counter {
+      display: none !important;
+    }
+    .panel-right {
+      width: 100% !important;
+      left: 0 !important;
+      background: #050505 !important;
+      border: none !important;
+    }
+    .brand-visual, .canvas-container, .browser-frame, .network-container, .workbench, .ecommerce-container, .product-showcase {
+      left: 50% !important;
+      top: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      margin: 0 !important;
+    }
+</style>
+</head>
+<body>
+  <div
+    id="motion-root"
+    data-composition-id="motion-root"
+    data-start="0"
+    data-duration="10"
+    data-width="1920"
+    data-height="1080"
+  >
+    <!-- Noise texture -->
+    <div class="noise"></div>
+
+    <!-- Split panels -->
+    <div class="panel-left" id="panelLeft"></div>
+    <div class="panel-right" id="panelRight"></div>
+
+    <!-- Ambient glows -->
+    <div class="glow-amber" id="glowAmber"></div>
+    <div class="glow-gold" id="glowGold"></div>
+    <div class="glow-right" id="glowRight"></div>
+
+    <!-- Grid -->
+    <div class="grid"></div>
+
+    <!-- Structural lines -->
+    <div class="v-rule v-rule-1" id="vRule1"></div>
+    <div class="v-rule v-rule-2" id="vRule2"></div>
+    <div class="h-rule h-rule-top" id="hRuleTop"></div>
+    <div class="h-rule h-rule-bottom" id="hRuleBottom"></div>
+
+    <!-- Ghost letter -->
+    <div class="ghost-M" id="ghostM">M</div>
+
+    <!-- Scan line -->
+    <div class="scanline" id="scanline"></div>
+
+    <!-- Status bar -->
+    <div class="status-bar" id="statusBar">
+      <div class="status-dot" id="statusDot"></div>
+      <span class="status-label">Physics Animation System · Active</span>
+    </div>
+
+    <!-- ── LEFT CONTENT ── -->
+    <div class="content">
+      <div class="eyebrow" id="eyebrowEl">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-text">The Design Flow · 05</span>
+      </div>
+
+      <div class="title-row-1" id="titleRow1">Motion</div>
+      <div class="title-row-2" id="titleRow2">Design</div>
+
+      <div class="descriptor-grid" id="descGrid">
+        <div class="desc-item">
+          <div class="desc-label">Discipline</div>
+          <div class="desc-value">Micro-flows</div>
+        </div>
+        <div class="desc-item">
+          <div class="desc-label">Approach</div>
+          <div class="desc-value">Easing Curves</div>
+        </div>
+        <div class="desc-item">
+          <div class="desc-label">Output</div>
+          <div class="desc-value">Lottie Systems</div>
+        </div>
+      </div>
+
+      <div class="rule" id="ruleEl"></div>
+
+      <div class="stats-row" id="statsRow">
+        <div class="stat">
+          <span class="stat-num">60<em>fps</em></span>
+          <span class="stat-label">Locked Rate</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">&lt;16<em>ms</em></span>
+          <span class="stat-label">Frame Budget</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">∞</span>
+          <span class="stat-label">Physics Feel</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT PANEL: CURVE VISUAL ── -->
+    <div class="motion-visual" id="motionVisual">
+
+      <!-- Easing Curve Workbench -->
+      <div class="curve-container">
+        <svg id="curveSvg" width="100%" height="100%" viewBox="0 0 620 440" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Coordinates Grid -->
+          <line x1="0" y1="88" x2="620" y2="88" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+          <line x1="0" y1="176" x2="620" y2="176" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+          <line x1="0" y1="264" x2="620" y2="264" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+          <line x1="0" y1="352" x2="620" y2="352" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+          
+          <line x1="124" y1="0" x2="124" y2="440" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+          <line x1="248" y1="0" x2="248" y2="440" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+          <line x1="372" y1="0" x2="372" y2="440" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+          <line x1="496" y1="0" x2="496" y2="440" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+
+          <!-- Axis lines -->
+          <line x1="20" y1="420" x2="600" y2="420" stroke="rgba(240,237,230,0.12)" stroke-width="1"/>
+          <line x1="20" y1="20" x2="20" y2="420" stroke="rgba(240,237,230,0.12)" stroke-width="1"/>
+
+          <text x="8" y="435" font-family="JetBrains Mono,monospace" font-size="10" fill="rgba(240,237,230,0.25)">0</text>
+          <text x="590" y="435" font-family="JetBrains Mono,monospace" font-size="10" fill="rgba(240,237,230,0.25)">t</text>
+          <text x="8" y="15" font-family="JetBrains Mono,monospace" font-size="10" fill="rgba(240,237,230,0.25)">v</text>
+
+          <!-- Easing Area gradient fill -->
+          <path id="curveFill" d="M20 420 C120 420, 160 50, 310 30 C420 20, 500 20, 600 15 L600 420 Z" fill="url(#motGrad)" opacity="0.25"/>
+
+          <!-- Bezier Easing curve strokes -->
+          <path id="curveStroke" d="M20 420 C120 420, 160 50, 310 30 C420 20, 500 20, 600 15" stroke="#F59E0B" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path id="curveStroke2" d="M20 420 C150 420, 240 140, 600 15" stroke="rgba(200,169,110,0.3)" stroke-width="1.5" stroke-dasharray="6 4" fill="none"/>
+
+          <!-- Handles -->
+          <line id="handleLine1" x1="20" y1="420" x2="120" y2="420" stroke="rgba(245,158,11,0.4)" stroke-width="1" stroke-dasharray="4 3"/>
+          <circle id="handleDot1" cx="120" cy="420" r="5" fill="#F59E0B" opacity="0.6"/>
+
+          <line id="handleLine2" x1="310" y1="30" x2="160" y2="50" stroke="rgba(245,158,11,0.4)" stroke-width="1" stroke-dasharray="4 3"/>
+          <circle id="handleDot2" cx="160" cy="50" r="5" fill="#F59E0B" opacity="0.6"/>
+
+          <!-- Labels inside SVG -->
+          <text x="100" y="390" font-family="JetBrains Mono,monospace" font-size="11" fill="rgba(245,158,11,0.5)">ease.in</text>
+          <text x="260" y="60" font-family="JetBrains Mono,monospace" font-size="11" fill="rgba(245,158,11,0.5)">expo.out</text>
+          <text x="490" y="30" font-family="JetBrains Mono,monospace" font-size="11" fill="rgba(200,169,110,0.5)">settled</text>
+
+          <!-- SVG Particles riding curve -->
+          <circle id="particle0" r="7.5" fill="#F59E0B"/>
+          <circle id="particle0Ring" r="14" fill="none" stroke="rgba(245,158,11,0.2)" stroke-width="1.5"/>
+
+          <circle id="particle1" r="5.5" fill="rgba(245,158,11,0.75)"/>
+          <circle id="particle2" r="4.5" fill="rgba(245,158,11,0.5)"/>
+          <circle id="particle3" r="6" fill="#C8A96E"/>
+
+          <!-- End points -->
+          <circle cx="600" cy="15" r="7" fill="#F59E0B"/>
+          <circle cx="600" cy="15" r="14" fill="rgba(245,158,11,0.15)"/>
+
+          <defs>
+            <linearGradient id="motGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <!-- Floating Easing Card -->
+      <div class="floating-card" id="floatCard1" style="left: -120px; top: 40px; min-width: 220px;">
+        <div class="badge-label">Easing Profile</div>
+        <div class="badge-val" style="color: #F59E0B;">power4.out</div>
+        <div class="badge-sub">extreme velocity spring</div>
+      </div>
+
+      <!-- Floating Budget Card -->
+      <div class="floating-card" id="floatCard2" style="left: -90px; bottom: 40px; min-width: 240px; border-color: rgba(245, 158, 11, 0.2);">
+        <div class="badge-label" style="color: #F59E0B;">Feel Index</div>
+        <div class="badge-val" style="color: #C8A96E; font-size: 20px;">Buttery Smooth</div>
+        <div class="badge-sub">Fluid physics compliance</div>
+      </div>
+    </div>
+
+    <div class="slide-counter">05 / 06</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      /* ── INITIAL STATES ── */
+      gsap.set("#panelLeft", { opacity: 0 });
+      gsap.set("#panelRight", { opacity: 0 });
+      gsap.set("#glowAmber", { opacity: 0, scale: 0.6 });
+      gsap.set("#glowGold", { opacity: 0 });
+      gsap.set("#glowRight", { opacity: 0, scale: 0.6 });
+      gsap.set("#vRule1", { scaleY: 0 });
+      gsap.set("#vRule2", { scaleY: 0 });
+      gsap.set("#hRuleTop", { scaleX: 0, transformOrigin: "left" });
+      gsap.set("#hRuleBottom", { scaleX: 0, transformOrigin: "right" });
+      gsap.set("#ghostM", { opacity: 0, x: -60 });
+      gsap.set("#scanline", { top: -4, opacity: 0 });
+      gsap.set("#statusBar", { opacity: 0, y: -20 });
+
+      // Left panel content
+      gsap.set("#eyebrowEl", { opacity: 0, x: -30 });
+      gsap.set("#titleRow1", { opacity: 0, y: 80, skewY: 3 });
+      gsap.set("#titleRow2", { opacity: 0, y: 80, skewY: 3 });
+      gsap.set("#descGrid", { opacity: 0, y: 24 });
+      gsap.set("#ruleEl", { scaleX: 0, transformOrigin: "left" });
+      gsap.set("#statsRow", { opacity: 0, y: 20 });
+
+      // Right panel curves and handles
+      gsap.set("#motionVisual", { opacity: 0 });
+      gsap.set("#curveSvg", { opacity: 0 });
+      gsap.set("#curveStroke", { opacity: 0 });
+      gsap.set("#curveStroke2", { opacity: 0 });
+      gsap.set("#curveFill", { opacity: 0 });
+      gsap.set(["#handleLine1", "#handleLine2", "#handleDot1", "#handleDot2"], { opacity: 0 });
+      
+      // Particles initial
+      gsap.set("#particle0", { x: 20, y: 420, opacity: 0 });
+      gsap.set("#particle0Ring", { x: 20, y: 420, opacity: 0 });
+      gsap.set("#particle1", { x: 100, y: 380, opacity: 0 });
+      gsap.set("#particle2", { x: 200, y: 180, opacity: 0 });
+      gsap.set("#particle3", { x: 350, y: 35, opacity: 0 });
+
+      gsap.set("#floatCard1", { opacity: 0, y: -20, x: -10 });
+      gsap.set("#floatCard2", { opacity: 0, y: 20 });
+
+      /* ── BUILD PHASE (0–3.5s) ── */
+
+      // Background panels
+      tl.fromTo("#panelLeft", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "none" }, 0.1);
+      tl.fromTo("#panelRight", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "none" }, 0.1);
+
+      // Radial glows
+      tl.fromTo("#glowAmber", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 2.0, ease: "power3.out" }, 0.2);
+      tl.fromTo("#glowGold", { opacity: 0 }, { opacity: 1, duration: 1.8, ease: "power2.out" }, 0.4);
+      tl.fromTo("#glowRight", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 2.0, ease: "power3.out" }, 0.3);
+
+      // Structural layout rules
+      tl.fromTo("#vRule1", { scaleY: 0 }, { scaleY: 1, duration: 1.2, ease: "expo.out" }, 0.2);
+      tl.fromTo("#vRule2", { scaleY: 0 }, { scaleY: 1, duration: 1.0, ease: "expo.out" }, 0.4);
+      tl.fromTo("#hRuleTop", { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: "expo.out" }, 0.35);
+      tl.fromTo("#hRuleBottom", { scaleX: 0 }, { scaleX: 1, duration: 1.1, ease: "expo.out" }, 0.5);
+
+      // Ghost M
+      tl.fromTo("#ghostM", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 1.6, ease: "expo.out" }, 0.3);
+
+      // Top Status Bar
+      tl.fromTo("#statusBar", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, 0.5);
+
+      // Scanline sweeps down once
+      tl.fromTo("#scanline", { opacity: 0, top: -4 }, { opacity: 1, duration: 0.2, ease: "none" }, 0.6);
+      tl.to("#scanline", { top: 1084, duration: 1.4, ease: "power1.inOut" }, 0.8);
+      tl.to("#scanline", { opacity: 0, duration: 0.2, ease: "none" }, 2.1);
+
+      // Left panel content: eyebrow
+      tl.fromTo("#eyebrowEl", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" }, 0.7);
+
+      // Main Title (skew reveal)
+      tl.fromTo("#titleRow1", { opacity: 0, y: 80, skewY: 3 }, { opacity: 1, y: 0, skewY: 0, duration: 1.0, ease: "power4.out" }, 1.0);
+      tl.fromTo("#titleRow2", { opacity: 0, y: 80, skewY: 3 }, { opacity: 1, y: 0, skewY: 0, duration: 1.0, ease: "power4.out" }, 1.18);
+
+      // Descriptors
+      tl.fromTo("#descGrid", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 1.9);
+
+      // Division Rule + Stats
+      tl.fromTo("#ruleEl", { scaleX: 0 }, { scaleX: 1, duration: 0.9, ease: "expo.out" }, 2.3);
+      tl.fromTo("#statsRow", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 2.7);
+
+      // Right panel visual container reveal
+      tl.fromTo("#motionVisual", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, 0.6);
+      tl.fromTo("#curveSvg", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "power2.out" }, 0.7);
+
+      // Easing Curve strokes & fills
+      tl.fromTo("#curveStroke", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power3.out" }, 0.9);
+      tl.fromTo("#curveStroke2", { opacity: 0 }, { opacity: 1, duration: 0.7, ease: "power2.out" }, 1.1);
+      tl.fromTo("#curveFill", { opacity: 0 }, { opacity: 0.25, duration: 0.8, ease: "power2.out" }, 1.0);
+      tl.fromTo(["#handleLine1", "#handleLine2", "#handleDot1", "#handleDot2"], { opacity: 0 }, { opacity: 1, duration: 0.5, stagger: 0.08, ease: "power2.out" }, 1.4);
+
+      // Particles initial pops in
+      tl.fromTo("#particle0", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "back.out(2)" }, 1.5);
+      tl.fromTo("#particle0Ring", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 1.5);
+      tl.fromTo("#particle1", { opacity: 0 }, { opacity: 0.75, duration: 0.4, ease: "power2.out" }, 1.7);
+      tl.fromTo("#particle2", { opacity: 0 }, { opacity: 0.5, duration: 0.4, ease: "power2.out" }, 1.95);
+      tl.fromTo("#particle3", { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "back.out(2)" }, 2.2);
+
+      // Floating outcomes cards
+      tl.fromTo("#floatCard1", { opacity: 0, y: -20, x: -10 }, { opacity: 1, y: 0, x: 0, duration: 0.8, ease: "power3.out" }, 2.2);
+      tl.fromTo("#floatCard2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power3.out" }, 2.4);
+
+      /* ── BREATHE PHASE (3.5s–12s) ── */
+      const cycleDur = 4.0;
+      const repeats = Math.ceil(10 / cycleDur);
+
+      // Ghost M slow drift
+      tl.fromTo("#ghostM", { x: 0 }, { x: -20, duration: cycleDur, ease: "sine.inOut", yoyo: true, repeat: repeats }, 3.5);
+
+      // Glow breathing
+      tl.to("#glowAmber", { scale: 1.12, opacity: 0.75, duration: cycleDur, ease: "sine.inOut", yoyo: true, repeat: repeats }, 3.5);
+      tl.to("#glowRight", { scale: 1.15, opacity: 0.8, duration: cycleDur * 0.8, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / (cycleDur * 0.8)) }, 3.8);
+
+      // Leading particle riding bezier curve forwards & back
+      tl.fromTo("#particle0", { x: 20, y: 420 }, { x: 600, y: 15, duration: 2.4, ease: "power3.inOut", yoyo: true, repeat: Math.ceil(10 / 4.8) }, 3.5);
+      tl.fromTo("#particle0Ring", { x: 20, y: 420 }, { x: 600, y: 15, duration: 2.4, ease: "power3.inOut", yoyo: true, repeat: Math.ceil(10 / 4.8) }, 3.5);
+
+      // Other particles follow behind
+      tl.fromTo("#particle1", { x: 100, y: 380 }, { x: 450, y: 25, duration: 2.0, ease: "power2.inOut", yoyo: true, repeat: Math.ceil(10 / 4.0) }, 3.5);
+      tl.fromTo("#particle2", { x: 200, y: 180 }, { x: 550, y: 20, duration: 2.6, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / 5.2) }, 3.5);
+      tl.fromTo("#particle3", { x: 350, y: 35 }, { x: 600, y: 15, duration: 1.5, ease: "expo.inOut", yoyo: true, repeat: Math.ceil(10 / 3.0) }, 3.5);
+
+      // Curve stroke subtle breathing yoyo opacity
+      tl.fromTo("#curveStroke", { opacity: 1 }, { opacity: 0.6, duration: 1.8, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / 3.6) }, 3.5);
+
+      // Floating cards gentle float
+      tl.fromTo("#floatCard1", { y: 0 }, { y: 12, duration: cycleDur * 0.9, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / (cycleDur * 0.9)) }, 3.5);
+      tl.fromTo("#floatCard2", { y: 0 }, { y: -8, duration: cycleDur * 0.8, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / (cycleDur * 0.8)) }, 3.5);
+
+      // Status dot pulsing
+      tl.to("#statusDot", { opacity: 0.25, duration: 0.7, ease: "sine.inOut", yoyo: true, repeat: Math.ceil(10 / 1.4) }, 3.5);
+
+      window.__timelines["motion-root"] = tl;
+    </script>
+  </div>
+</body>
+</html>

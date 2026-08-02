@@ -1,0 +1,48 @@
+# Vercel Deployment Ignore — exclude dev artifacts and non-portfolio folders
+.git
+.next
+node_modules
+.vercel
+brainstorming_mockup.html
+implementation_plan.md
+task.md
+walkthrough.md
+README.md
+DESIGN.md
+PRODUCT.md
+
+# Dev/research loop folders (not part of the site)
+ai-loop
+branding-loop
+ecommerce-loop
+motion-loop
+saas-loop
+web-loop
+hyperframes
+graphify-out
+scratch
+docs
+
+# Reference sites (not deployed)
+Uncommondesign.group
+Utopaistudios.com
+
+# Misc dev files
+*.cjs
+get_utopai_styles.cjs
+inspect_live_fonts.cjs
+inspect_live_slider.cjs
+inspect_slider.cjs
+print_ancestors.cjs
+render-all-videos.mjs
+take_live_screenshots.cjs
+take_screenshot.cjs
+take_screenshot.js
+take_slider_screenshots*.cjs
+antigravity-brain-export.md
+schema-validation-results.json
+mempalace-export.json
+mempalace.yaml
+graphify-export.json
+entities.json
+test.json

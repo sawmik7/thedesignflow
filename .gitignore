@@ -1,48 +1,93 @@
-node_modules
-.next
-out
-dist
-build
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
 .DS_Store
 *.pem
 
-# npm
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# AI Agents & Skills
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# ignore agents
 .agents/
-.tmp_skills/
-.gemini/
-AGENTS.md
+.agents
+
+Aistudio-hasanul-portfolio/
+temp_repo_clones/
+temp_sickn33/
+tmp_sick/
+.agents/
+
+*.zip
+*.exe
+*.pdf
+*.mp4
+!public/**/*.mp4
+
+# Agentic Files
 CLAUDE.md
-GEMINI.md
-
-# Build Logs & Temp
-*.log
-*.txt
-.tmp/
-tmp/
-ts_errors.log
-build_output.log
-build.log
+AGENTS.md
+metadata.json
+opencode.json
 ts_errors.txt
-build_log.txt
-tsconfig.tsbuildinfo
+build.log
+errors.txt
+read_pdf2.cjs
 
-# Agent Sessions & Artifacts
-SESSION.md
-.superpowers/
-graphify-out/
-scratch/
-indexing_request_list.md
-process_logo.js
-process_logo.py
-~/
+
+# MemPalace per-project files (issue #185)
+mempalace.yaml
+entities.json
+
+# Build & Agent Artifacts
+/dist
+/graphify-out
+/Utopaistudios.com
+/mempalace-export.json
+/graphify-export.json
+/antigravity-brain-export.md
+.archived-consolidation-note.md
+
+# HyperFrames render work directories (captured frames)
+public/Video/work-*/
+public/Video/hyperframes/
+
+# HyperFrames source compositions (keep mp4 outputs but not source HTML)
+hyperframes/
+
+# Render scripts
+render-all-videos.mjs
+
+.vercel
